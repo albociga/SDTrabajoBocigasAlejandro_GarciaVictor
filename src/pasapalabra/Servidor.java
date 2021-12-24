@@ -30,13 +30,17 @@ public class Servidor {
 						BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream())))
 
 				{
+					List<String> abecedario = Arrays.asList("A","B","C","D","E","F","G","H","I","J","L","M","N","Ñ","O","P","Q","R","S","T","U","V","X","Y","Z");
 					//El servidor comprueba que todas las palabras hayan sido respondidas en cuyo caso terminará el rosco
 					while (!rosco.todas_preguntas_respondidas()) {
 
 						// Lee el número de la letra en la que se encuentra el jugador A=0,B=1....
 						palabra_actual = br.readLine();
 						//Busca el enunciado en la lista de preguntas del rosco y lo envía el cliente
-						bw.write(rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getEnunciado());
+						String pregunta=rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getEmpieza_contiene() 
+								+" con "+abecedario.get(Integer.parseInt(palabra_actual))+" "
+								+rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getEnunciado()+"\r\n";
+						bw.write(pregunta);
 						bw.flush();
 						//Queda esperando la respuesta del cliente y la lee
 						linea = br.readLine();
@@ -44,10 +48,10 @@ public class Servidor {
 						if (!linea.equalsIgnoreCase("PASAPALABRA")) {
 							//Comprueba que lo leido del cliente y la respuesta a la pregunta sea correcta o falsa, y envía el resultado
 							if (rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
-								bw.write("ACERTADA");
+								bw.write("ACERTADA \r\n");
 								bw.flush();
 							} else {
-								bw.write("FALLADA");
+								bw.write("FALLADA \r\n");
 								bw.flush();
 							}
 							//Cambía el respondido de la pregunta a TRUE
@@ -58,11 +62,11 @@ public class Servidor {
 							//De la misma forma si ha recibido un pasapalabra el cliente deberá enviarle la siguiente pregunta
 							//en la que se encuentra
 						}else {
-							bw.write("PASA");
+							bw.write("PASA \r\n");
 							bw.flush();
 						}
 					}
-					bw.write("HA COMPLETADO EL ROSCO, VUELVA PRONTO");
+					bw.write("HA COMPLETADO EL ROSCO, VUELVA PRONTO \r\n");
 					bw.flush();
 					client.close();
 				} catch (IOException e) {
