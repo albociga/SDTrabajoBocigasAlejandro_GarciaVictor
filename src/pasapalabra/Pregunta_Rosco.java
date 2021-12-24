@@ -493,7 +493,7 @@ public class Pregunta_Rosco {
 				l.put("X", lX);
 				l.put("Y", lY);
 				l.put("Z", lZ);
-				return l;
+				return l;  //A->LIST, B->LIST .....
 	}
 
 	@Override

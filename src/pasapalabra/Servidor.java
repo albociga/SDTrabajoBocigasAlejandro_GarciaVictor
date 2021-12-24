@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+
 public class Servidor {
 	public static void main(String[] args) {
 		// El cliente será el que envíe al servidor la letra en la que se encuentra con
@@ -40,10 +41,9 @@ public class Servidor {
 						//Queda esperando la respuesta del cliente y la lee
 						linea = br.readLine();
 						//Si lo escrito por el cliente NO es "PASAPALABRA"
-						if (!linea.equals("PASAPALABRA")) {
+						if (!linea.equalsIgnoreCase("PASAPALABRA")) {
 							//Comprueba que lo leido del cliente y la respuesta a la pregunta sea correcta o falsa, y envía el resultado
-							if (rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta()
-									.equals(linea.toUpperCase())) {
+							if (rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
 								bw.write("ACERTADA");
 								bw.flush();
 							} else {
@@ -57,6 +57,9 @@ public class Servidor {
 							
 							//De la misma forma si ha recibido un pasapalabra el cliente deberá enviarle la siguiente pregunta
 							//en la que se encuentra
+						}else {
+							bw.write("PASA");
+							bw.flush();
 						}
 					}
 					bw.write("HA COMPLETADO EL ROSCO, VUELVA PRONTO");
