@@ -22,6 +22,9 @@ public class Cliente {
 			}
 			int i=0;
 			while(!lista.isEmpty()) {
+				//Lectura necesaría para que hasta que el server no le de vía libre para jugar, no juegue
+				//Si no hay dos jugadores no quitar primera lectura
+				br.readLine();
 				bw.write(lista.get(i)+"\r\n");
 				bw.flush();
 				System.out.println(br.readLine());
