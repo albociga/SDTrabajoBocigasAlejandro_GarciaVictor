@@ -281,7 +281,7 @@ public class Pregunta_Rosco {
 
 				// S
 				Pregunta_Rosco pr1S = new Pregunta_Rosco("Danza popular brasileña de influencia africana cantada de compás binario", "Samba", "Empieza", false);
-				Pregunta_Rosco pr2S = new Pregunta_Rosco("Poner o colocar a alguien en una silla o banco, de manera que quede apoyado y descansando sobre las nalgas", "Sentar ", "Empieza", false);
+				Pregunta_Rosco pr2S = new Pregunta_Rosco("Poner o colocar a alguien en una silla o banco, de manera que quede apoyado y descansando sobre las nalgas", "Sentar", "Empieza", false);
 				Pregunta_Rosco pr3S = new Pregunta_Rosco("Librar de un riesgo o peligro, poner en seguro", "Salvar", "Empieza", false);
 //				Pregunta_Rosco pr4S = new Pregunta_Rosco("", "", "Empieza", false);
 //				Pregunta_Rosco pr5S = new Pregunta_Rosco("", "", "Empieza", false);
@@ -476,7 +476,7 @@ public class Pregunta_Rosco {
 				l.put("F", lF);
 				l.put("G", lG);
 				l.put("H", lH);
-				l.put("I", lA);
+				l.put("I", lI);
 				l.put("J", lJ);
 				l.put("L", lL);
 				l.put("M", lM);

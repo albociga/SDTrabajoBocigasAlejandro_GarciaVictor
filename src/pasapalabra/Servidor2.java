@@ -41,7 +41,7 @@ public class Servidor2 {
 					//Empieza jugando el jugador 1 (Se podría implementar que empezasen aleatoriamente, pero creo que es insignificante)
 					//El servidor comprueba que todas las palabras hayan sido respondidas en cuyo caso terminará el juego
 					while (!rosco.todas_preguntas_respondidas() || !rosco2.todas_preguntas_respondidas()) {
-						if(!rosco.todas_preguntas_respondidas() && jug1_true_jug2_false==true) {
+						if(!rosco.todas_preguntas_respondidas() && jug1_true_jug2_false) {
 							//CONSOLA DEL SERVER, QUITAR PARA QUE NO APAREZCA(ES UN LOG DE JUGADAS)
 							System.out.println("El JUGADOR 1 esta jugando");
 							//Necesario para que los dos jugadores jueguen cada uno en su turno 
@@ -73,9 +73,13 @@ public class Servidor2 {
 								}
 								//Cambía el respondido de la pregunta a TRUE
 								rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
+								
 								//Después volverá al while donde comprobará que si se ha respondido a todas las preguntas, 
 								//en caso negativo se quedará esperando para seguir leyendo
-								
+								//En caso de que se termine el roscon acertando una pregunta no cambiaria de turno
+								if(rosco.todas_preguntas_respondidas()) {
+									jug1_true_jug2_false=false;
+								}
 								//De la misma forma si ha recibido un pasapalabra el cliente deberá enviarle la siguiente pregunta
 								//en la que se encuentra
 							}else {
@@ -85,7 +89,7 @@ public class Servidor2 {
 								bw.write("PASA \r\n");
 								bw.flush();
 							}
-						}else if (!rosco2.todas_preguntas_respondidas() && jug1_true_jug2_false==false) {
+						}else if (!rosco2.todas_preguntas_respondidas() && !jug1_true_jug2_false) {
 							//CONSOLA DEL SERVER, QUITAR PARA QUE NO APAREZCA(ES UN LOG DE JUGADAS)
 							System.out.println("El JUGADOR 2 esta jugando");
 							//Necesario para que los dos jugadores jueguen cada uno en su turno 
@@ -119,7 +123,10 @@ public class Servidor2 {
 								rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
 								//Después volverá al while donde comprobará que si se ha respondido a todas las preguntas, 
 								//en caso negativo se quedará esperando para seguir leyendo
-								
+								//En caso de que se termine el roscon acertando una pregunta no cambiaria de turno
+								if(rosco2.todas_preguntas_respondidas()) {
+									jug1_true_jug2_false=true;
+								}
 								//De la misma forma si ha recibido un pasapalabra el cliente deberá enviarle la siguiente pregunta
 								//en la que se encuentra
 							}else {

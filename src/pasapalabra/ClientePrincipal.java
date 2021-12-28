@@ -10,13 +10,19 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cliente {
+public class ClientePrincipal {
 	public static void main(String[]args) {
 		try(Socket s = new Socket("localhost",8498);
 				BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
 				BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))){
-			
+			System.out.println(br.readLine());
+			String opcion="";
+			do {
+				opcion=teclado.readLine();
+			}while(!opcion.equals("1")&&!opcion.equals("2"));
+			bw.write(opcion+"\r\n");
+			bw.flush();
 			List<Integer> lista=new ArrayList<Integer>();
 			for(int i=0;i<25;i++) {
 				lista.add(i);
@@ -25,7 +31,9 @@ public class Cliente {
 			while(!lista.isEmpty()) {
 				//Lectura necesaría para que hasta que el server no le de vía libre para jugar, no juegue
 				//Si no hay dos jugadores no quitar primera lectura
-				br.readLine();
+				if(opcion.equals("2")) {
+					br.readLine();
+				}
 				bw.write(lista.get(i)+"\r\n");
 				bw.flush();
 				System.out.println(br.readLine());
