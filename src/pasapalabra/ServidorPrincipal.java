@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 
 public class ServidorPrincipal {
 	public static void main(String[] args) {
-		ExecutorService pool = Executors.newFixedThreadPool(2); // Pool de hilos
+		
 		ExecutorService th= Executors.newSingleThreadExecutor();
 		try (ServerSocket ss = new ServerSocket(8498))
 		{
@@ -24,16 +24,17 @@ public class ServidorPrincipal {
 					bw.write("Seleccione si van a jugar 1 o 2 jugadores (escriba 1 o 2) \r\n");
 					bw.flush();
 					String linea=br.readLine();
+					AtenderPeticion a;
 					if(linea.equals("1")) {
-						AtenderPeticion a=new AtenderPeticion(s1,br,bw);
-						th.execute(a);
+						a=new AtenderPeticion(s1,br,bw);
 					}else {
 						System.out.println("Esperado al segundo jugador (conecte otro clente si no lo has hecho)");
 						Socket s2 = ss.accept();
 						System.out.println("Jugador 2 conectado");
-						AtenderPeticion a=new AtenderPeticion(s1,s2,br,bw);
-						pool.execute(a);
+						a=new AtenderPeticion(s1,s2,br,bw);
 					}
+					th.execute(a);
+					
 			}
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -41,7 +42,6 @@ public class ServidorPrincipal {
 		}
 		finally {
 			th.shutdown();
-			pool.shutdown();
 		}
 
 	}

@@ -55,10 +55,10 @@ public class AtenderPeticion implements Runnable {
 					if (!linea.equalsIgnoreCase("PASAPALABRA")) {
 						//Comprueba que lo leido del cliente y la respuesta a la pregunta sea correcta o falsa, y envía el resultado
 						if (rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
-							bw.write("ACERTADA \r\n");
+							bw.write("ACERTADA\r\n");
 							bw.flush();
 						} else {
-							bw.write("FALLADA \r\n");
+							bw.write("FALLADA\r\n");
 							bw.flush();
 						}
 						//Cambía el respondido de la pregunta a TRUE
@@ -69,13 +69,12 @@ public class AtenderPeticion implements Runnable {
 						//De la misma forma si ha recibido un pasapalabra el cliente deberá enviarle la siguiente pregunta
 						//en la que se encuentra
 					}else {
-						bw.write("PASA \r\n");
+						bw.write("PASA\r\n");
 						bw.flush();
 					}
 				}
 				bw.write("HA COMPLETADO EL ROSCO, VUELVA PRONTO \r\n");
 				bw.flush();
-				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -108,13 +107,13 @@ public class AtenderPeticion implements Runnable {
 						if (!linea.equalsIgnoreCase("PASAPALABRA")) {
 							//Comprueba que lo leido del cliente y la respuesta a la pregunta sea correcta o falsa, y envía el resultado
 							if (rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
-								bw.write("ACERTADA \r\n");
+								bw.write("ACERTADA\r\n");
 								bw.flush();
 							} else {
 								if(!rosco2.todas_preguntas_respondidas()) {
 									jug1_true_jug2_false=false;
 								}
-								bw.write("FALLADA \r\n");
+								bw.write("FALLADA\r\n");
 								bw.flush();
 							}
 							//Cambía el respondido de la pregunta a TRUE
@@ -155,14 +154,14 @@ public class AtenderPeticion implements Runnable {
 						if (!linea.equalsIgnoreCase("PASAPALABRA")) {
 							//Comprueba que lo leido del cliente y la respuesta a la pregunta sea correcta o falsa, y envía el resultado
 							if (rosco2.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
-								bw2.write("ACERTADA \r\n");
+								bw2.write("ACERTADA\r\n");
 								bw2.flush();
 								
 							} else {
 								if(!rosco.todas_preguntas_respondidas()) {
 									jug1_true_jug2_false=true;
 								}
-								bw2.write("FALLADA \r\n");
+								bw2.write("FALLADA\r\n");
 								bw2.flush();
 							}
 							//Cambía el respondido de la pregunta a TRUE
