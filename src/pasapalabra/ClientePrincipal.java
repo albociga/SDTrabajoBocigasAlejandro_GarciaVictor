@@ -31,13 +31,14 @@ public class ClientePrincipal {
 			}
 			int i=0;
 			Rosco r=new Rosco(bw);
-			r.setVisible(true);
 			while(!lista.isEmpty()) {
+				
 				//Lectura necesaría para que hasta que el server no le de vía libre para jugar, no juegue
 				//Si no hay dos jugadores no quitar primera lectura
 				if(opcion.equals("2")) {
 					br.readLine();
 				}
+				r.setVisible(true);
 				bw.write(lista.get(i)+"\r\n");
 				bw.flush();
 				r.getCampoPregunta().setText(br.readLine());
@@ -45,8 +46,14 @@ public class ClientePrincipal {
 				if(!r.getPasapalabra()) {
 					r.actualizarRosco(acierto_fallo, lista.get(i));
 					lista.remove(i);
+					if(acierto_fallo.equals("FALLADA")) {
+						r.setVisible(false);
+					}
 				}
-				else i++;
+				else {
+					r.setVisible(false);
+					i++;
+				}
 				if(i>=lista.size()) {
 					i=0;
 				}

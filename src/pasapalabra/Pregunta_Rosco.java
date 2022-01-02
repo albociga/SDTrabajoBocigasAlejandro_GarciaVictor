@@ -222,7 +222,7 @@ public class Pregunta_Rosco {
 				// Ñ
 				Pregunta_Rosco pr1Ñ = new Pregunta_Rosco("Acción, espectáculo u obra que exagera ciertos rasgos que se consideran españoles", "Españolada", "Contiene", false);
 				Pregunta_Rosco pr2Ñ = new Pregunta_Rosco("Hacer o fabricar moneda", "Acuñar", "Contiene", false);
-				Pregunta_Rosco pr3Ñ = new Pregunta_Rosco("Mentira o noticia fabulosa de pura invención", "Patraña.", "Contiene", false);
+				Pregunta_Rosco pr3Ñ = new Pregunta_Rosco("Mentira o noticia fabulosa de pura invención", "Patraña", "Contiene", false);
 //				Pregunta_Rosco pr4Ñ = new Pregunta_Rosco("", "", "Empieza", false);
 //				Pregunta_Rosco pr5Ñ = new Pregunta_Rosco("", "", "Empieza", false);
 //				Pregunta_Rosco pr6Ñ = new Pregunta_Rosco("", "", "Empieza", false);

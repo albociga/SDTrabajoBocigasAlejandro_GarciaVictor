@@ -165,7 +165,7 @@ public class AtenderPeticion implements Runnable {
 								bw2.flush();
 							}
 							//Cambía el respondido de la pregunta a TRUE
-							rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
+							rosco2.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
 							if(rosco2.todas_preguntas_respondidas()) {
 								jug1_true_jug2_false=true;
 							}

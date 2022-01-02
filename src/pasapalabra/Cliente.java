@@ -10,6 +10,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import GUI.Rosco;
+
 public class Cliente {
 	public static void main(String[]args) {
 		try(Socket s = new Socket("localhost",8498);
@@ -22,26 +24,35 @@ public class Cliente {
 				lista.add(i);
 			}
 			int i=0;
+			Rosco r=new Rosco(bw);
 			while(!lista.isEmpty()) {
 				//Lectura necesaría para que hasta que el server no le de vía libre para jugar, no juegue
 				//Si no hay dos jugadores no quitar primera lectura
 				br.readLine();
+				r.setVisible(true);
 				bw.write(lista.get(i)+"\r\n");
 				bw.flush();
-				System.out.println(br.readLine());
-				String respuesta=teclado.readLine();
-				bw.write(respuesta+"\r\n");
-				bw.flush();
-				if(!respuesta.equalsIgnoreCase("PASAPALABRA")) {
+				r.getCampoPregunta().setText(br.readLine());
+				String acierto_fallo=br.readLine();
+				if(!r.getPasapalabra()) {
+					r.actualizarRosco(acierto_fallo, lista.get(i));
 					lista.remove(i);
+					if(acierto_fallo.equals("FALLADA")) {
+						r.setVisible(false);
+					}
 				}
-				else i++;
+				else {
+					r.setVisible(false);
+					i++;
+				}
 				if(i>=lista.size()) {
 					i=0;
 				}
-				System.out.println(br.readLine());
 			}
+			r.setVisible(false);
+			r.dispose();
 			System.out.println(br.readLine());
+			bw.close();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
