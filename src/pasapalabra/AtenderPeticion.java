@@ -31,16 +31,16 @@ public class AtenderPeticion implements Runnable {
 	@Override
 	public void run() {
 		Rosco_Final rosco = new Rosco_Final(
-				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()));
+				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20);
 		String linea = null;
 		String palabra_actual = null;
 		List<String> abecedario = Arrays.asList("A","B","C","D","E","F","G","H","I","J","L","M","N","Ñ","O","P","Q","R","S","T","U","V","X","Y","Z");
 		if(!this.multijugador) {
 			try {
-				
+				bw.write(rosco.getTiempoRestante()+"\r\n");
+				bw.flush();
 				//El servidor comprueba que todas las palabras hayan sido respondidas en cuyo caso terminará el rosco
-				while (!rosco.todas_preguntas_respondidas()) {
-
+				while (!rosco.todas_preguntas_respondidas()&&!rosco.tiempoTerminado()) {
 					// Lee el número de la letra en la que se encuentra el jugador A=0,B=1....
 					palabra_actual = br.readLine();
 					//Busca el enunciado en la lista de preguntas del rosco y lo envía el cliente
@@ -57,9 +57,11 @@ public class AtenderPeticion implements Runnable {
 						if (rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
 							bw.write("ACERTADA\r\n");
 							bw.flush();
+							rosco.anadirAcierto();
 						} else {
 							bw.write("FALLADA\r\n");
 							bw.flush();
+							rosco.anadirFallo();
 						}
 						//Cambía el respondido de la pregunta a TRUE
 						rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
@@ -72,8 +74,11 @@ public class AtenderPeticion implements Runnable {
 						bw.write("PASA\r\n");
 						bw.flush();
 					}
+					rosco.setTiempoRestante(Integer.parseInt(br.readLine()));
 				}
-				bw.write("HA COMPLETADO EL ROSCO, VUELVA PRONTO \r\n");
+				bw.write("HA COMPLETADO EL ROSCO \r\n");
+				bw.flush();
+				bw.write("Has obtenido "+rosco.getAciertos() +" aciertos y "+rosco.getFallos()+" fallos \r\n");
 				bw.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -81,17 +86,24 @@ public class AtenderPeticion implements Runnable {
 			}
 		}else {
 			Rosco_Final rosco2 = new Rosco_Final(
-					Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()));
+					Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20);
 			boolean jug1_true_jug2_false = true;
 			try(BufferedReader br2 = new BufferedReader(new InputStreamReader(this.socket2.getInputStream()));
 						BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(this.socket2.getOutputStream()))){
-				while (!rosco.todas_preguntas_respondidas() || !rosco2.todas_preguntas_respondidas()) {
-					if(!rosco.todas_preguntas_respondidas() && jug1_true_jug2_false) {
+				bw.write(rosco.getTiempoRestante()+"\r\n");
+				bw.flush();
+				bw2.write(rosco2.getTiempoRestante()+"\r\n");
+				bw2.flush();
+				while ((!rosco.todas_preguntas_respondidas() || !rosco2.todas_preguntas_respondidas()) && (!rosco.tiempoTerminado() || !rosco2.tiempoTerminado())) {
+					if(!rosco.todas_preguntas_respondidas() && jug1_true_jug2_false &&!rosco.tiempoTerminado()) {
 						//CONSOLA DEL SERVER, QUITAR PARA QUE NO APAREZCA(ES UN LOG DE JUGADAS)
 						System.out.println("El JUGADOR 1 esta jugando");
 						//Necesario para que los dos jugadores jueguen cada uno en su turno 
 						//(para que cliente1 o cliente2 se quede parado mientras el otro liente juega) 
+						
 						bw.write("Para la espera \r\n");
+						bw.flush();
+						bw.write(rosco.getTiempoRestante()+"\r\n"); //LE ENVIA EL TIEMPO RESTANTE AL ROSCO
 						bw.flush();
 						// Lee el número de la letra en la que se encuentra el jugador A=0,B=1....
 						palabra_actual = br.readLine();
@@ -109,12 +121,14 @@ public class AtenderPeticion implements Runnable {
 							if (rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
 								bw.write("ACERTADA\r\n");
 								bw.flush();
+								rosco.anadirAcierto();
 							} else {
 								if(!rosco2.todas_preguntas_respondidas()) {
 									jug1_true_jug2_false=false;
 								}
 								bw.write("FALLADA\r\n");
 								bw.flush();
+								rosco.anadirFallo();
 							}
 							//Cambía el respondido de la pregunta a TRUE
 							rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
@@ -130,15 +144,18 @@ public class AtenderPeticion implements Runnable {
 							if(!rosco2.todas_preguntas_respondidas()) {
 								jug1_true_jug2_false=false;
 							}
-							bw.write("PASA \r\n");
+							bw.write("PASA\r\n");
 							bw.flush();
 						}
-					}else if (!rosco2.todas_preguntas_respondidas() && !jug1_true_jug2_false) {
+						rosco.setTiempoRestante(Integer.parseInt(br.readLine()));
+					}else if (!rosco2.todas_preguntas_respondidas() && !jug1_true_jug2_false && !rosco2.tiempoTerminado()) {
 						//CONSOLA DEL SERVER, QUITAR PARA QUE NO APAREZCA(ES UN LOG DE JUGADAS)
 						System.out.println("El JUGADOR 2 esta jugando");
 						//Necesario para que los dos jugadores jueguen cada uno en su turno 
 						//(para que cliente1 o cliente2 se quede parado mientras el otro liente juega) 
 						bw2.write("Para la espera \r\n");
+						bw2.flush();
+						bw2.write(rosco2.getTiempoRestante()+"\r\n"); //LE ENVIA EL TIEMPO RESTANTE AL ROSCO
 						bw2.flush();
 						// Lee el número de la letra en la que se encuentra el jugador A=0,B=1....
 						palabra_actual = br2.readLine();
@@ -156,6 +173,7 @@ public class AtenderPeticion implements Runnable {
 							if (rosco2.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
 								bw2.write("ACERTADA\r\n");
 								bw2.flush();
+								rosco2.anadirAcierto();
 								
 							} else {
 								if(!rosco.todas_preguntas_respondidas()) {
@@ -163,6 +181,7 @@ public class AtenderPeticion implements Runnable {
 								}
 								bw2.write("FALLADA\r\n");
 								bw2.flush();
+								rosco2.anadirFallo();
 							}
 							//Cambía el respondido de la pregunta a TRUE
 							rosco2.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
@@ -178,19 +197,42 @@ public class AtenderPeticion implements Runnable {
 							if(!rosco.todas_preguntas_respondidas()) {
 								jug1_true_jug2_false=true;
 							}
-							bw2.write("PASA \r\n");
+							bw2.write("PASA\r\n");
 							bw2.flush();
 						}
+						rosco2.setTiempoRestante(Integer.parseInt(br2.readLine()));
 					}
 				}
 				bw.write("LOS DOS JUGADORES HAN COMPLETADO EL ROSCO \r\n");
 				bw.flush();
 				bw2.write("LOS DOS JUGADORES HAN COMPLETADO EL ROSCO \r\n");
 				bw2.flush();
-				bw.write("EL ganador es: ...FALTA IMPLEMENTAR........ \r\n");
-				bw.flush();
-				bw.write("EL ganador es: ...FALTA IMPLEMENTAR........ \r\n");
-				bw2.flush();
+				if(rosco.getAciertos()>rosco2.getAciertos()) {
+					bw.write("El ganador es: JUGADOR 1 \r\n");
+					bw.flush();
+					bw2.write("El ganador es: JUGADOR 1 \r\n");
+					bw2.flush();
+				} else if(rosco.getAciertos()<rosco2.getAciertos()) {
+					bw.write("El ganador es: JUGADOR 2 \r\n");
+					bw.flush();
+					bw2.write("El ganador es: JUGADOR 2 \r\n");
+					bw2.flush();
+				} else if(rosco.getFallos()<rosco2.getFallos()) {
+					bw.write("El ganador es: JUGADOR 1 \r\n");
+					bw.flush();
+					bw2.write("El ganador es: JUGADOR 1 \r\n");
+					bw2.flush();
+				}else if(rosco.getFallos()>rosco2.getFallos()) {
+					bw.write("El ganador es: JUGADOR 2 \r\n");
+					bw.flush();
+					bw2.write("El ganador es: JUGADOR 2 \r\n");
+					bw2.flush();
+				}else {
+					bw.write("EMPATE \r\n");
+					bw.flush();
+					bw2.write("EMPATE \r\n");
+					bw2.flush();
+				}
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

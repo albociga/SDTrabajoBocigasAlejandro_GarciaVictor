@@ -24,11 +24,15 @@ public class Cliente {
 				lista.add(i);
 			}
 			int i=0;
-			Rosco r=new Rosco(bw);
-			while(!lista.isEmpty()) {
+			int t=Integer.parseInt(br.readLine());
+			Rosco r=new Rosco(bw,t);
+			r.setTitle("Jugador 2");
+			while(!lista.isEmpty()&&r.getTiempoRestante()>0) {
 				//Lectura necesaría para que hasta que el server no le de vía libre para jugar, no juegue
 				//Si no hay dos jugadores no quitar primera lectura
 				br.readLine();
+				int t1=Integer.parseInt(br.readLine());
+				r.setTiempoRestante(t1);
 				r.setVisible(true);
 				bw.write(lista.get(i)+"\r\n");
 				bw.flush();
@@ -38,19 +42,25 @@ public class Cliente {
 					r.actualizarRosco(acierto_fallo, lista.get(i));
 					lista.remove(i);
 					if(acierto_fallo.equals("FALLADA")) {
+						r.pausarReloj();
 						r.setVisible(false);
 					}
 				}
 				else {
+					r.pausarReloj();
 					r.setVisible(false);
 					i++;
 				}
 				if(i>=lista.size()) {
 					i=0;
 				}
+				bw.write(r.getTiempoRestante()+"\r\n");
+				bw.flush();
 			}
+			r.pausarReloj();
 			r.setVisible(false);
 			r.dispose();
+			System.out.println(br.readLine());
 			System.out.println(br.readLine());
 			bw.close();
 		} catch (UnknownHostException e) {

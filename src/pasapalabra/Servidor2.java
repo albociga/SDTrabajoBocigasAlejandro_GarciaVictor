@@ -20,9 +20,9 @@ public class Servidor2 {
 		// un INT
 		// Si el Cliente pulsa Pasapalabra, enviará "PASAPALABRA|INT"
 		Rosco_Final rosco = new Rosco_Final(
-				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()));
+				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),200);
 		Rosco_Final rosco2 = new Rosco_Final(
-				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()));
+				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),200);
 		String linea = null;
 		String palabra_actual = null;
 		//Cuando juegue el jugador 1 booleano= true, si juega el jugador 2, booleano = false

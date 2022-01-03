@@ -10,13 +10,13 @@ import javax.swing.border.EmptyBorder;
 
 
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.GroupLayout;
@@ -74,15 +74,22 @@ public class Rosco extends JFrame {
 	private int fallos=0;
 	private JLabel lblContFallos;
 	private JLabel lblContAciertos;
-	
-	public Rosco(BufferedWriter bw) {
+	private JLabel lblTiempoSeg;
+	private int tiempoRestante;
+	private JButton btnJugar;
+	private Timer timer;
+	private TimerTask timerTask;
+	private JButton btnPasapalabra;
+	public Rosco(BufferedWriter bw,int tiempo) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 604, 470);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		buffer=bw;
+		tiempoRestante=tiempo;
 		txtRespuesta = new JTextField();
+		txtRespuesta.setVisible(false);
 		txtRespuesta.setColumns(10);
 		
 		panelRosco = new JPanel();
@@ -101,7 +108,8 @@ public class Rosco extends JFrame {
 		lblContFallos = new JLabel(String.valueOf(fallos));
 		panelFallos.add(lblContFallos);
 		
-		JButton btnPasapalabra = new JButton("Pasapalabra");
+		btnPasapalabra = new JButton("Pasapalabra");
+		btnPasapalabra.setVisible(false);
 		btnPasapalabra.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -116,6 +124,7 @@ public class Rosco extends JFrame {
 		});
 		
 		btnResponder = new JButton("Responder");
+		btnResponder.setVisible(false);
 		btnResponder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -131,39 +140,70 @@ public class Rosco extends JFrame {
 		});
 		
 		txtPregunta = new JTextPane();
+		txtPregunta.setVisible(false);
 		txtPregunta.setDisabledTextColor(Color.BLACK);
 		txtPregunta.setEditable(false);
 		txtPregunta.setBorder(new LineBorder(new Color(0, 0, 0)));
 		txtPregunta.setEnabled(false);
+		
+		btnJugar = new JButton("Jugar");
+		btnJugar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtPregunta.setVisible(true);
+				txtRespuesta.setVisible(true);
+				btnPasapalabra.setVisible(true);
+				btnResponder.setVisible(true);
+				btnJugar.setVisible(false);
+				timer= new Timer();
+				timerTask=new TimerTask() {
+		            public void run() {
+		            	lblTiempoSeg.setText(String.valueOf(tiempoRestante));
+		                tiempoRestante--;
+		                if (tiempoRestante <0) {
+		                	lblTiempoSeg.setText(String.valueOf(0));
+		                	try {
+		                		txtRespuesta.setEditable(false);
+		                		btnResponder.setVisible(false);
+		                		pasapalabra=true;
+								buffer.write("PASAPALABRA\r\n");
+								buffer.flush();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		                }
+		            }
+		        };
+				timer.scheduleAtFixedRate(timerTask, 0, 1000);
+			}
+		});
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(txtPregunta, GroupLayout.PREFERRED_SIZE, 547, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(txtPregunta, GroupLayout.PREFERRED_SIZE, 547, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+							.addComponent(panelRosco, GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(panelRosco, GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
-									.addGap(20)
+									.addGap(30)
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-										.addGroup(gl_contentPane.createSequentialGroup()
-											.addGap(10)
-											.addComponent(panelFallos, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE))
+										.addComponent(panelFallos, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)
 										.addComponent(panelTiempo, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)
-										.addComponent(panelAciertos, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE))
-									.addPreferredGap(ComponentPlacement.RELATED))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(txtRespuesta, GroupLayout.PREFERRED_SIZE, 188, GroupLayout.PREFERRED_SIZE)
-									.addGap(45)
-									.addComponent(btnResponder)
-									.addGap(44)
-									.addComponent(btnPasapalabra)
-									.addPreferredGap(ComponentPlacement.RELATED, 109, Short.MAX_VALUE)))
-							.addGap(0))))
+										.addComponent(panelAciertos, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)))
+								.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addComponent(btnJugar)
+									.addGap(43))))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(txtRespuesta, GroupLayout.PREFERRED_SIZE, 188, GroupLayout.PREFERRED_SIZE)
+							.addGap(45)
+							.addComponent(btnResponder)
+							.addGap(44)
+							.addComponent(btnPasapalabra)))
+					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
@@ -176,7 +216,9 @@ public class Rosco extends JFrame {
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(panelFallos, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(panelTiempo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(panelTiempo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnJugar)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtPregunta, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
@@ -196,7 +238,7 @@ public class Rosco extends JFrame {
 		JLabel lblTiempoTxt = new JLabel("Tiempo:");
 		panelTiempo.add(lblTiempoTxt);
 		
-		JLabel lblTiempoSeg = new JLabel("200");
+		lblTiempoSeg = new JLabel("");
 		panelTiempo.add(lblTiempoSeg);
 		GroupLayout gl_panelRosco = new GroupLayout(panelRosco);
 		gl_panelRosco.setHorizontalGroup(
@@ -334,5 +376,18 @@ public class Rosco extends JFrame {
 		}
 		generarRosco();
 	}
-	
+	public int getTiempoRestante() {
+		return this.tiempoRestante;
+	}
+	public void setTiempoRestante(int t) {
+		this.tiempoRestante=t;
+	}
+	public void pausarReloj() {
+		timer.cancel();
+		txtPregunta.setVisible(false);
+		txtRespuesta.setVisible(false);
+		btnPasapalabra.setVisible(false);
+		btnResponder.setVisible(false);
+		btnJugar.setVisible(true);
+	}
 }

@@ -9,10 +9,15 @@ import java.util.Random;
 public class Rosco_Final {
 	//Preguntas que contienen el Rosco
 	private List<Pregunta_Rosco> preguntas = new ArrayList<Pregunta_Rosco>();
-
+	private int aciertos;
+	private int fallos;
+	private int tiempoRestante;
 	//Constructor de un Rosco nuevo, habitualmente se iniciara con aleatoriamente
-	public Rosco_Final(List<Pregunta_Rosco> preguntas) {
+	public Rosco_Final(List<Pregunta_Rosco> preguntas, int tiempo) {
 		this.preguntas = preguntas;
+		this.aciertos=0;
+		this.fallos=0;
+		this.tiempoRestante=tiempo;
 	}
 	
 	public List<Pregunta_Rosco> getPreguntas() {
@@ -62,5 +67,25 @@ public class Rosco_Final {
 		//System.out.println(rosco_final);
 		return rosco_final;
 	}
-
+	public int getAciertos() {
+		return this.aciertos;
+	}
+	public void anadirAcierto() {
+		this.aciertos++;
+	}
+	public int getFallos() {
+		return this.fallos;
+	}
+	public void anadirFallo() {
+		this.fallos++;
+	}
+	public int getTiempoRestante() {
+		return this.tiempoRestante;
+	}
+	public void setTiempoRestante(int t) {
+		this.tiempoRestante=t;
+	}
+	public boolean tiempoTerminado() {
+		return this.tiempoRestante<=0;
+	}
 }
