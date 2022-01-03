@@ -15,7 +15,8 @@ import java.net.Socket;
 
 public class Servidor_pista_musical {
 	public static void main(String[] args) {
-		// El cliente1 comenzará jugando en la canción 1 y 3, el clinete2 comenzará jugando en las canciones 2 y 4
+		// El cliente1 comenzará jugando en la canción 1 y 3, el clinete2 comenzará jugando en las canciones 2 y 4 (NO IMPLEMENTADO)
+		// Creación aleatoria de las preguntas musicales
 		Preguntas_pista_musical preg_musicales = Preguntas_pista_musical.crear_preguntas_musicales_aleatorio(Pregunta_Pista_Musical.todas_pistas_musicales_existentes());
 		String respuesta = null;
 		int aciertos_jug_1 = 0;
@@ -32,16 +33,21 @@ public class Servidor_pista_musical {
 
 				{
 					FileInputStream cancion = null;
-					//El servidor comprueba que todas las palabras hayan sido respondidas en cuyo caso terminará el rosco
+					//El numero total de Preguntas Musicales en la lista es 4 (Preguntas con diferentes canciones)
 					for (int i = 0; i < 4; i++) {
+						//Fichero de la canción
 						File faux = new File(preg_musicales.getPreguntas_musica().get(i).getPath_musica_pista_musical());
 						cancion= new FileInputStream(faux);
+						
+						//Envio al cliente el tamaño del archivo de musica
 						long tam_archivo_musica = faux.length();
 						dw.writeLong(tam_archivo_musica);
 						dw.flush();
 						
+						//Creo el Buffer de lectura
 						byte[] buff=new byte[1024*32];
-						//if(i % 2 == 0) {
+						//if(i % 2 == 0) {   IMPLEMENTACIÓN POSTERIOR 2 JUGADORES
+							//Leo y envío el fichero al cliente
 							int leidos = cancion.read(buff);
 							while(leidos!=-1)
 							{
@@ -53,26 +59,38 @@ public class Servidor_pista_musical {
 							
 							int j=0;
 							boolean respondida_correcta = false;
+							//Envío al cliente el numero de pistas totales para cada pregunta
+							
+							
+							//************AQUI ES DONDE REALIZA MAL EL ENVIO DEL NUMERO DE PISTAS**********************************************************************************
+							//MANDA 5(LO QUE DEBERIA MANDAR SIEMPRE), O MANDA NUMERO ALEATORIO, O SE QUEDA PILLADO)
 							dw.writeInt(preg_musicales.getPreguntas_musica().get(i).getPistas().size());
-							//System.out.println(preg_musicales.getPreguntas_musica().get(i).getPistas().size());
 							dw.flush();
-							while(j<preg_musicales.getPreguntas_musica().get(i).getPistas().size() && respondida_correcta == false) {
-								//System.out.println(preg_musicales.getPreguntas_musica().get(i).getPistas().get(j).toString());
+							//******************************************************************************************************************************************************
+							
+							//HAGO UN BUCLE CON LIMITE EN EL NUMERO TOTAL DE PISTAS Y CON UN BOOLEANO QUE CAMBIA CUANDO LA RESPONDAN BIEN
+							while(j<preg_musicales.getPreguntas_musica().get(i).getPistas().size() && respondida_correcta == false) {	
+								//ENVIO LA PISTA AL CLIENTE
 								dw.writeChars(preg_musicales.getPreguntas_musica().get(i).getPistas().get(j) + "\n");
 								dw.flush();
+								//ESPERO SU RESPUESTA
 								respuesta = br.readLine();
-								//System.out.println();
+								//COMPRUEBO SI LA RESPUESTA ES CORRECTA O NO
 								if(respuesta.equalsIgnoreCase(preg_musicales.getPreguntas_musica().get(i).getSolucion())) {
+									//SI ES CORRECTA, CAMBIA EL BOOLEANO PARA SALIR DEL BUCLE
 									respondida_correcta = true;
+									//ENVIO AL CLIENTE PARA QUE SEPA SI HA RESPONDIDO BIEN O NO
 									dw.writeChar('C');
 									dw.flush();
 									aciertos_jug_1 ++;
 								}else{
 									dw.writeChar('F');
 									dw.flush();
+									//SI HA FALLADO AUNMENTO J PARA QUE CONTINUE CON LA SIGUIENTE PISTA
 									j++;
 								}
 							}
+							//CUANDO SE ACABAN LAS PISTAS, ENVIA UN MENSAJE PARA QUE EL CLIENTE SEPA QUE HA PASADO
 							if(j == preg_musicales.getPreguntas_musica().get(i).getPistas().size()) {
 								dw.writeChars("HA FALLADO TODOS LOS INTENTOS PARA ESTA CANCION, LA SOLUCIÓN ERA " + preg_musicales.getPreguntas_musica().get(i).getSolucion() + "\n");
 								dw.flush();
@@ -85,49 +103,6 @@ public class Servidor_pista_musical {
 						//}
 					}
 					dw.writeChars("El numero de aciertos ha sido " + aciertos_jug_1 + " Felicidades\n");
-						/*
-						//El servidor lee el fichero de musica
-						
-						// Lee el número de la letra en la que se encuentra el jugador A=0,B=1....
-						palabra_actual = br.readLine();
-						//Busca el enunciado en la lista de preguntas del rosco y lo envía el cliente
-						String pregunta=rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getEmpieza_contiene() 
-								+" con "+abecedario.get(Integer.parseInt(palabra_actual))+" "
-								+rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getEnunciado()+"\r\n";
-						bw.write(pregunta);
-						bw.flush();
-						//Queda esperando la respuesta del cliente y la lee
-						linea = br.readLine();
-						//Si lo escrito por el cliente NO es "PASAPALABRA"
-						if (!linea.equalsIgnoreCase("PASAPALABRA")) {
-							//Comprueba que lo leido del cliente y la respuesta a la pregunta sea correcta o falsa, y envía el resultado
-							if (rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).getRespuesta().equalsIgnoreCase(linea.toUpperCase())) {
-								bw.write("ACERTADA \r\n");
-								bw.flush();
-							} else {
-								bw.write("FALLADA \r\n");
-								bw.flush();
-							}
-							//Cambía el respondido de la pregunta a TRUE
-							rosco.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
-							//Después volverá al while donde comprobará que si se ha respondido a todas las preguntas, 
-							//en caso negativo se quedará esperando para seguir leyendo
-							
-							//De la misma forma si ha recibido un pasapalabra el cliente deberá enviarle la siguiente pregunta
-							//en la que se encuentra
-						}else {
-							bw.write("PASA \r\n");
-							bw.flush();
-						}
-					}
-					bw.write("HA COMPLETADO EL ROSCO, VUELVA PRONTO \r\n");
-					bw.flush();
-					client.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}*/
 		}catch (IOException e) {
 			// TODO: handle exception
 			e.printStackTrace();

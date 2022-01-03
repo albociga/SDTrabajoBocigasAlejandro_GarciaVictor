@@ -25,7 +25,9 @@ public class Cliente_pista_musical {
 				//BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))) {
 
+			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
+				//CREO UN FICHERO AUXILIAR EN EL CLIENTE, QUE CUANDO EL JUEGO ACABE, SERÁ ELIMINADO
 				File f = new File("pista.snd");
 				if (!f.exists()) {
 					try {
@@ -38,30 +40,36 @@ public class Cliente_pista_musical {
 				
 				FileOutputStream fos = new FileOutputStream(f);
 
+				//EL CLIENTE RECIBE EL TAMAÑO DEL ARCHIVO DE MUSICA
 				long tam_leer_musica =  di.readLong();
-				System.out.println(1);
+				//System.out.println(1);
 
+				//AQUI CREA EL BUFFER Y RECIBE EL FICHERO
 				byte[] buff = new byte[1024 * 32];
 				int leidos = di.read(buff);
-				System.out.println(2);
+				//System.out.println(2);
 				for (int i = leidos; i < tam_leer_musica; i += leidos) {
 					fos.write(buff, 0, leidos);
 					fos.flush();
 					leidos = di.read(buff);
 				}
 				fos.close();
-				System.out.println(3);
+				
 				int i = 0;
 				boolean aux = false;
+				
+				//***********************************AQUI ES DONDE ME APARECE EL PROBLEMA**********************************
+				//A VECES RECIBE 5 (CORRECTO) , A VECES NUMERO ALEATORIO Y OTRAS SE QUEDA PILLADO
 				int tam_pistas = di.readInt();
-				System.out.println(tam_pistas);
+				System.out.println("ESTE VALOR BIEN(5) O MAL: "+ tam_pistas);
+				//***********************************AQUI ES DONDE ME APARECE EL PROBLEMA**********************************
 				
 				while (i < tam_pistas && aux == false) {
 					mandado_server = di.readLine();
-					//System.out.println(mandado_server);
+					
 					System.out.println("Pista:" + mandado_server);
 					System.out.println("REPRODUCIENDO SONIDO");
-					// AQUI SE REPRODUCIRA EL SONIDO
+					System.out.println("-------------AQUI SONARA LA MUSICA |||FALTA IMPLEMENTAR|||-------------");
 					System.out.println("AHORA PUEDE ESCRIBIR");
 					leido_teclado = teclado.readLine();
 					bw.write(leido_teclado);
