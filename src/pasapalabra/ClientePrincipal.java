@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CyclicBarrier;
+
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -63,14 +63,14 @@ public class ClientePrincipal extends Thread{
 		multijugador=enj.multijugador();
 		enj.dispose();
 	}
+	
 	public static void pruebaMusical(BufferedWriter bw, Socket s) {
 		String mandado_server = null;
 		try(DataInputStream di = new DataInputStream(s.getInputStream())){
 			PruebaMusica pm=new PruebaMusica(bw);
+			pm.setVisible(true);
 			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
-				pm.setVisible(true);
-				final CyclicBarrier barrera = new CyclicBarrier(2);
 				//CREO UN FICHERO AUXILIAR EN EL CLIENTE, QUE CUANDO EL JUEGO ACABE, SERÁ ELIMINADO
 				File f = new File("pista.snd");
 				if (!f.exists()) {
@@ -83,10 +83,10 @@ public class ClientePrincipal extends Thread{
 				} 
 				
 				FileOutputStream fos = new FileOutputStream(f);
-	
+
 				//EL CLIENTE RECIBE EL TAMAÑO DEL ARCHIVO DE MUSICA
 				long tam_leer_musica =  di.readLong();
-	
+
 				byte[] buff = new byte[1024];
 				int num_iteraciones_leerfichero = (int)(tam_leer_musica/1024);//REVSAR
 				if(tam_leer_musica%1024!=0) {
@@ -106,7 +106,7 @@ public class ClientePrincipal extends Thread{
 				leidos = di.read(buff2);
 				fos.write(buff2, 0, leidos);
 				
-				
+				fos.close();
 				
 				int i = 0;
 				boolean aux = false;
@@ -115,15 +115,21 @@ public class ClientePrincipal extends Thread{
 				int tam_pistas = di.readInt();
 				while (i < tam_pistas && aux == false && respuesta_correcta_segundo_cliente == false) {
 					mandado_server = di.readLine();
+					SoundPlayer_FINAL simpleSoundPlayer = new SoundPlayer_FINAL("pista.snd",i); 
+					pm.mostrarReproduciendo();
 					pm.setPista(mandado_server);
-					SoundPlayer2 simpleSoundPlayer = new SoundPlayer2("pista.snd"); 
 					//SoundPlayer3_pruebas simpleSoundPlayer = new SoundPlayer3_pruebas("pista.snd",i); 
+
 					try {
 						Thread.sleep(simpleSoundPlayer.getMiliSegundosAudio());
+						
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+
+					simpleSoundPlayer.stop();
+					pm.ocultarReproduciendo();
 					//System.out.println("SI ES SU TURNO PODRÁ ESCRIBIR");
 					//System.out.println();
 					mandado_server = di.readLine();
@@ -139,15 +145,23 @@ public class ClientePrincipal extends Thread{
 					}
 					respuesta_correcta_segundo_cliente = di.readBoolean();					
 				}
-				pm.setVisible(false);
 				mandado_server=di.readLine();
-				System.out.println(mandado_server);
+				pm.setPista(mandado_server);
+				mandado_server=di.readLine();
+				String[] trozos=mandado_server.split(" ");
+				pm.setPuntuacionJug1(trozos[0]);
+				pm.setPuntuacionJug2(trozos[1]);
 				f.delete();
+				try {
+					Thread.sleep(6000);
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			pm.dispose();
-			System.out.println();	
-			mandado_server=di.readLine();
-			System.out.println(mandado_server);	
+			pm.setVisible(false);
+			pm.dispose();	
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -159,6 +173,8 @@ public class ClientePrincipal extends Thread{
 			e1.printStackTrace();
 		}
 	}
+	
+	
 	public static void roscoFinal(BufferedReader br, BufferedWriter bw) {
 		List<Integer> lista=new ArrayList<Integer>();
 		for(int i=0;i<25;i++) {

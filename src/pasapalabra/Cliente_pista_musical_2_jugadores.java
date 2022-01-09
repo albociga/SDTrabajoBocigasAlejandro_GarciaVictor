@@ -33,12 +33,12 @@ public class Cliente_pista_musical_2_jugadores {
 				) {
 			
 			PruebaMusica pm=new PruebaMusica(bw);
-			
+			pm.setVisible(true);
 			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
 
 
-				pm.setVisible(true);
+				
 
 				//CREO UN FICHERO AUXILIAR EN EL CLIENTE, QUE CUANDO EL JUEGO ACABE, SERÁ ELIMINADO
 				File f = new File("pista.snd");
@@ -84,13 +84,8 @@ public class Cliente_pista_musical_2_jugadores {
 				int tam_pistas = di.readInt();
 				while (i < tam_pistas && aux == false && respuesta_correcta_segundo_cliente == false) {
 					mandado_server = di.readLine();
-
-					
-					System.out.println("Pista:" + mandado_server);
-					System.out.println();
-					System.out.println();
-					System.out.println("REPRODUCIENDO SONIDO");	
 					SoundPlayer_FINAL simpleSoundPlayer = new SoundPlayer_FINAL("pista.snd",i); 
+					pm.mostrarReproduciendo();
 					pm.setPista(mandado_server);
 					//SoundPlayer3_pruebas simpleSoundPlayer = new SoundPlayer3_pruebas("pista.snd",i); 
 
@@ -103,9 +98,7 @@ public class Cliente_pista_musical_2_jugadores {
 					}
 
 					simpleSoundPlayer.stop();
-					System.out.println();
-					System.out.println();
-
+					pm.ocultarReproduciendo();
 					//System.out.println("SI ES SU TURNO PODRÁ ESCRIBIR");
 					//System.out.println();
 					mandado_server = di.readLine();
@@ -121,15 +114,23 @@ public class Cliente_pista_musical_2_jugadores {
 					}
 					respuesta_correcta_segundo_cliente = di.readBoolean();					
 				}
-				pm.setVisible(false);
 				mandado_server=di.readLine();
-				System.out.println(mandado_server);
+				pm.setPista(mandado_server);
+				mandado_server=di.readLine();
+				String[] trozos=mandado_server.split(" ");
+				pm.setPuntuacionJug1(trozos[0]);
+				pm.setPuntuacionJug2(trozos[1]);
 				f.delete();
+				try {
+					Thread.sleep(6000);
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			pm.dispose();
-			System.out.println();	
-			mandado_server=di.readLine();
-			System.out.println(mandado_server);	
+			pm.setVisible(false);
+			pm.dispose();	
 		} catch (IOException e) {
 			// TODO: handle exception
 			e.printStackTrace();

@@ -242,13 +242,18 @@ public class Servidor_pista_musical_dos_jugadores {
 							dw2.writeBytes("INTENTOS AGOTADOS, LA SOLUCIÓN ERA "
 									+ preg_musicales.getPreguntas_musica().get(i).getSolucion() + "\n");
 							dw2.flush();
-						} else {
-							dw.writeBytes("CANCIÓN ACERTADA LOS SEGUNDOS GANADOS ACTUALMENTE SON JUGADOR1= "
-									+ aciertos_numseg_jug_1 + " JUGADOR2=" + aciertos_numseg_jug_2 + "\n");
+							dw.writeBytes(aciertos_numseg_jug_1 +" "+aciertos_numseg_jug_2+ "\r\n");
 							dw.flush();
-							
-							dw2.writeBytes("CANCIÓN ACERTADA LOS SEGUNDOS GANADOS ACTUALMENTE SON JUGADOR1= "
-									+ aciertos_numseg_jug_1 + " JUGADOR2=" + aciertos_numseg_jug_2 + "\n");
+							dw2.writeBytes(aciertos_numseg_jug_1 +" "+aciertos_numseg_jug_2+ "\r\n");
+							dw2.flush();
+						} else {
+							dw.writeBytes("CANCIÓN ACERTADA\r\n");
+							dw.flush();
+							dw2.writeBytes("CANCIÓN ACERTADA\r\n");
+							dw2.flush();
+							dw.writeBytes(aciertos_numseg_jug_1 +" "+aciertos_numseg_jug_2+ "\r\n");
+							dw.flush();
+							dw2.writeBytes(aciertos_numseg_jug_1 +" "+aciertos_numseg_jug_2+ "\r\n");
 							dw2.flush();
 						}
 						//respuesta = br.readLine();

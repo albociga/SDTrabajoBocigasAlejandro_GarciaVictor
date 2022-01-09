@@ -29,6 +29,10 @@ public class PruebaMusica extends JFrame {
 	private JPanel panelRespuesta;
 	private JLabel lblReproduciendo;
 	private BufferedWriter buffer;
+	private JLabel lblPtsJug1;
+	private JLabel lblPtsJug2;
+	private JLabel lblContJug1;
+	private JLabel lblContJug2;
 	/**
 	 * Launch the application.
 	 */
@@ -38,7 +42,7 @@ public class PruebaMusica extends JFrame {
 	 */
 	public PruebaMusica(BufferedWriter bw) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 206);
+		setBounds(100, 100, 495, 266);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -51,9 +55,20 @@ public class PruebaMusica extends JFrame {
 		panelRespuesta.setVisible(false);
 		
 		lblReproduciendo = new JLabel("REPRODUCIENDO");
+		lblReproduciendo.setVisible(false);
+		
+		lblPtsJug1 = new JLabel("Jugador 1:");
+		
+		lblPtsJug2 = new JLabel("Jugador 2:");
+		
+		lblContJug1 = new JLabel("0");
+		
+		lblContJug2 = new JLabel("0");
+		
+		JLabel lblNewLabel = new JLabel("Puntuaci\u00F3n");
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
@@ -64,8 +79,23 @@ public class PruebaMusica extends JFrame {
 							.addComponent(panelRespuesta, GroupLayout.PREFERRED_SIZE, 349, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(152)
-							.addComponent(lblReproduciendo)))
-					.addContainerGap(20, Short.MAX_VALUE))
+							.addComponent(lblReproduciendo))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(308)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addComponent(lblPtsJug2)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(lblContJug2))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addComponent(lblPtsJug1)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(lblContJug1)))))
+					.addContainerGap(65, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap(322, Short.MAX_VALUE)
+					.addComponent(lblNewLabel)
+					.addGap(101))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -76,7 +106,17 @@ public class PruebaMusica extends JFrame {
 					.addComponent(txtPista, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(panelRespuesta, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(69, Short.MAX_VALUE))
+					.addGap(15)
+					.addComponent(lblNewLabel)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPtsJug1)
+						.addComponent(lblContJug1))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPtsJug2)
+						.addComponent(lblContJug2, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE))
+					.addGap(19))
 		);
 		
 		txtRespuesta = new JTextField();
@@ -86,8 +126,8 @@ public class PruebaMusica extends JFrame {
 		btnResponder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					bw.write(txtRespuesta.getText()+"\r\n");
-					bw.flush(); 
+					buffer.write(txtRespuesta.getText()+"\r\n");
+					buffer.flush(); 
 					txtRespuesta.setText("");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -120,12 +160,22 @@ public class PruebaMusica extends JFrame {
 	public void setPista(String s) {
 		txtPista.setText(s);
 	}
+	public void ocultarReproduciendo() {
+		lblReproduciendo.setVisible(false);
+	}
+	public void mostrarReproduciendo() {
+		lblReproduciendo.setVisible(true);
+	}
 	public void activarRespuesta() {
 		panelRespuesta.setVisible(true);
-		lblReproduciendo.setVisible(false);
 	}
 	public void desactivarRespuesta() {
 		panelRespuesta.setVisible(false);
-		lblReproduciendo.setVisible(true);
+	}
+	public void setPuntuacionJug1(String s) {
+		lblContJug1.setText(s);
+	}
+	public void setPuntuacionJug2(String s) {
+		lblContJug2.setText(s);
 	}
 }
