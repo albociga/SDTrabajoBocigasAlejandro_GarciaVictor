@@ -1,3 +1,4 @@
+package principal;
 
 import pasapalabra.ClientePrincipal;
 
