@@ -243,7 +243,7 @@ public class Servidor_pista_musical_dos_jugadores {
 									+ preg_musicales.getPreguntas_musica().get(i).getSolucion() + "\n");
 							dw2.flush();
 						} else {
-							dw.writeBytes(" CANCIÓN ACERTADA LOS SEGUNDOS GANADOS ACTUALMENTE SON JUGADOR1= "
+							dw.writeBytes("CANCIÓN ACERTADA LOS SEGUNDOS GANADOS ACTUALMENTE SON JUGADOR1= "
 									+ aciertos_numseg_jug_1 + " JUGADOR2=" + aciertos_numseg_jug_2 + "\n");
 							dw.flush();
 							

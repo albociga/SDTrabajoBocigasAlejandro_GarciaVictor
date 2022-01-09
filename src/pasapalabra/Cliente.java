@@ -12,13 +12,18 @@ import java.util.List;
 
 import GUI.Rosco;
 
-public class Cliente {
-	public static void main(String[]args) {
-		try(Socket s = new Socket("localhost",8498);
+public class Cliente extends Thread{
+	String host;
+	int puerto;
+	public Cliente(String h, int prt) {
+		this.host=h;
+		this.puerto=prt;
+	}
+	public void run() {
+		try(Socket s = new Socket(this.host,this.puerto);
 				BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
 				BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))){
-			
 			List<Integer> lista=new ArrayList<Integer>();
 			for(int i=0;i<25;i++) {
 				lista.add(i);
@@ -60,8 +65,6 @@ public class Cliente {
 			r.pausarReloj();
 			r.setVisible(false);
 			r.dispose();
-			System.out.println(br.readLine());
-			System.out.println(br.readLine());
 			bw.close();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

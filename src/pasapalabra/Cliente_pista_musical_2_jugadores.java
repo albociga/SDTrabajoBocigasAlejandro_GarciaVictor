@@ -19,19 +19,27 @@ import java.util.concurrent.CyclicBarrier;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import GUI.PruebaMusica;
+
 public class Cliente_pista_musical_2_jugadores {
 	public static void main(String[] args) {
 		
 		String mandado_server = null;
-		String leido_teclado = null;
+		
 		try (Socket s = new Socket("localhost", 8498);
 				DataInputStream di = new DataInputStream(s.getInputStream());
-				BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
 				//BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))) {
-
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+				) {
+			
+			PruebaMusica pm=new PruebaMusica(bw);
+			
 			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
+
+
+				pm.setVisible(true);
+
 				//CREO UN FICHERO AUXILIAR EN EL CLIENTE, QUE CUANDO EL JUEGO ACABE, SERÁ ELIMINADO
 				File f = new File("pista.snd");
 				if (!f.exists()) {
@@ -74,15 +82,18 @@ public class Cliente_pista_musical_2_jugadores {
 				boolean respuesta_correcta_segundo_cliente = false;
 				
 				int tam_pistas = di.readInt();
-				
 				while (i < tam_pistas && aux == false && respuesta_correcta_segundo_cliente == false) {
 					mandado_server = di.readLine();
+
 					
 					System.out.println("Pista:" + mandado_server);
 					System.out.println();
 					System.out.println();
 					System.out.println("REPRODUCIENDO SONIDO");	
 					SoundPlayer_FINAL simpleSoundPlayer = new SoundPlayer_FINAL("pista.snd",i); 
+					pm.setPista(mandado_server);
+					//SoundPlayer3_pruebas simpleSoundPlayer = new SoundPlayer3_pruebas("pista.snd",i); 
+
 					try {
 						Thread.sleep(simpleSoundPlayer.getMiliSegundosAudio());
 						
@@ -90,20 +101,19 @@ public class Cliente_pista_musical_2_jugadores {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+
 					simpleSoundPlayer.stop();
 					System.out.println();
 					System.out.println();
+
 					//System.out.println("SI ES SU TURNO PODRÁ ESCRIBIR");
 					//System.out.println();
 					mandado_server = di.readLine();
 					//System.out.println(mandado_server);
 					if(mandado_server.equalsIgnoreCase("START")) {
-						System.out.println("********SU TURNO********");
-						leido_teclado = teclado.readLine();
-						bw.write(leido_teclado);
-						bw.newLine();
-						bw.flush();
+						pm.activarRespuesta();
 						mandado_server = di.readLine();
+						pm.desactivarRespuesta();
 						if (mandado_server.equalsIgnoreCase("Correcto")) {
 							aux = true;
 						}
@@ -111,14 +121,15 @@ public class Cliente_pista_musical_2_jugadores {
 					}
 					respuesta_correcta_segundo_cliente = di.readBoolean();					
 				}
+				pm.setVisible(false);
 				mandado_server=di.readLine();
 				System.out.println(mandado_server);
 				f.delete();
 			}
+			pm.dispose();
 			System.out.println();	
 			mandado_server=di.readLine();
 			System.out.println(mandado_server);	
-			
 		} catch (IOException e) {
 			// TODO: handle exception
 			e.printStackTrace();

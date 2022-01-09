@@ -76,8 +76,6 @@ public class AtenderPeticion implements Runnable {
 					}
 					rosco.setTiempoRestante(Integer.parseInt(br.readLine()));
 				}
-				bw.write("HA COMPLETADO EL ROSCO \r\n");
-				bw.flush();
 				bw.write("Has obtenido "+rosco.getAciertos() +" aciertos y "+rosco.getFallos()+" fallos \r\n");
 				bw.flush();
 			} catch (IOException e) {
@@ -123,7 +121,7 @@ public class AtenderPeticion implements Runnable {
 								bw.flush();
 								rosco.anadirAcierto();
 							} else {
-								if(!rosco2.todas_preguntas_respondidas()) {
+								if(!rosco2.todas_preguntas_respondidas() && !rosco2.tiempoTerminado()) {
 									jug1_true_jug2_false=false;
 								}
 								bw.write("FALLADA\r\n");
@@ -135,13 +133,13 @@ public class AtenderPeticion implements Runnable {
 							//Después volverá al while donde comprobará que si se ha respondido a todas las preguntas, 
 							//en caso negativo se quedará esperando para seguir leyendo
 							//En caso de terminar este rosco y acertar la ultima pregunta utilizamos este if para cambiar al otro rosco si este otro no ha terminado
-							if(rosco.todas_preguntas_respondidas()) {
+							if(rosco.todas_preguntas_respondidas() ||rosco.tiempoTerminado() ) {
 								jug1_true_jug2_false=false;
 							}
 							//De la misma forma si ha recibido un pasapalabra el cliente deberá enviarle la siguiente pregunta
 							//en la que se encuentra
 						}else {
-							if(!rosco2.todas_preguntas_respondidas()) {
+							if(!rosco2.todas_preguntas_respondidas() && !rosco2.tiempoTerminado()) {
 								jug1_true_jug2_false=false;
 							}
 							bw.write("PASA\r\n");
@@ -176,7 +174,7 @@ public class AtenderPeticion implements Runnable {
 								rosco2.anadirAcierto();
 								
 							} else {
-								if(!rosco.todas_preguntas_respondidas()) {
+								if(!rosco.todas_preguntas_respondidas()&&!rosco.tiempoTerminado()) {
 									jug1_true_jug2_false=true;
 								}
 								bw2.write("FALLADA\r\n");
@@ -185,7 +183,7 @@ public class AtenderPeticion implements Runnable {
 							}
 							//Cambía el respondido de la pregunta a TRUE
 							rosco2.getPreguntas().get(Integer.parseInt(palabra_actual)).setRespondida(true);
-							if(rosco2.todas_preguntas_respondidas()) {
+							if(rosco2.todas_preguntas_respondidas()||rosco2.tiempoTerminado()) {
 								jug1_true_jug2_false=true;
 							}
 							//Después volverá al while donde comprobará que si se ha respondido a todas las preguntas, 
@@ -194,7 +192,7 @@ public class AtenderPeticion implements Runnable {
 							//De la misma forma si ha recibido un pasapalabra el cliente deberá enviarle la siguiente pregunta
 							//en la que se encuentra
 						}else {
-							if(!rosco.todas_preguntas_respondidas()) {
+							if(!rosco.todas_preguntas_respondidas()&&!rosco.tiempoTerminado()) {
 								jug1_true_jug2_false=true;
 							}
 							bw2.write("PASA\r\n");
@@ -203,35 +201,26 @@ public class AtenderPeticion implements Runnable {
 						rosco2.setTiempoRestante(Integer.parseInt(br2.readLine()));
 					}
 				}
-				bw.write("LOS DOS JUGADORES HAN COMPLETADO EL ROSCO \r\n");
-				bw.flush();
-				bw2.write("LOS DOS JUGADORES HAN COMPLETADO EL ROSCO \r\n");
-				bw2.flush();
 				if(rosco.getAciertos()>rosco2.getAciertos()) {
 					bw.write("El ganador es: JUGADOR 1 \r\n");
 					bw.flush();
-					bw2.write("El ganador es: JUGADOR 1 \r\n");
-					bw2.flush();
+					
 				} else if(rosco.getAciertos()<rosco2.getAciertos()) {
 					bw.write("El ganador es: JUGADOR 2 \r\n");
 					bw.flush();
-					bw2.write("El ganador es: JUGADOR 2 \r\n");
-					bw2.flush();
+					
 				} else if(rosco.getFallos()<rosco2.getFallos()) {
 					bw.write("El ganador es: JUGADOR 1 \r\n");
 					bw.flush();
-					bw2.write("El ganador es: JUGADOR 1 \r\n");
-					bw2.flush();
+					
 				}else if(rosco.getFallos()>rosco2.getFallos()) {
 					bw.write("El ganador es: JUGADOR 2 \r\n");
 					bw.flush();
-					bw2.write("El ganador es: JUGADOR 2 \r\n");
-					bw2.flush();
+					
 				}else {
 					bw.write("EMPATE \r\n");
 					bw.flush();
-					bw2.write("EMPATE \r\n");
-					bw2.flush();
+					
 				}
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
