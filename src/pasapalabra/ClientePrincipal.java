@@ -32,13 +32,14 @@ public class ClientePrincipal extends Thread{
 	}
 	public void run() {
 		try(Socket s = new Socket(host,puerto);
-				BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
 				BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))){
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+				DataInputStream di = new DataInputStream(s.getInputStream())){
 			inicio(br,bw);
 			if(multijugador) {
 				Cliente cli=new Cliente(host,puerto);
 				cli.start();
+				pruebaMusical(bw,s,di);
 			}
 			roscoFinal(br,bw);
 		} catch (UnknownHostException e) {
@@ -64,10 +65,11 @@ public class ClientePrincipal extends Thread{
 		enj.dispose();
 	}
 	
-	public static void pruebaMusical(BufferedWriter bw, Socket s) {
+	public static void pruebaMusical(BufferedWriter bw, Socket s,DataInputStream di) {
 		String mandado_server = null;
-		try(DataInputStream di = new DataInputStream(s.getInputStream())){
+		try{
 			PruebaMusica pm=new PruebaMusica(bw);
+			pm.setTitle("Jugador 1");
 			pm.setVisible(true);
 			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
@@ -153,7 +155,7 @@ public class ClientePrincipal extends Thread{
 				pm.setPuntuacionJug2(trozos[1]);
 				f.delete();
 				try {
-					Thread.sleep(6000);
+					Thread.sleep(4000);
 					
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -184,7 +186,6 @@ public class ClientePrincipal extends Thread{
 		try {
 			int t=Integer.parseInt(br.readLine());
 			Rosco r=new Rosco(bw,t);
-			r.setTitle("Jugador 1");
 			while(!lista.isEmpty()&&r.getTiempoRestante()>0) {
 				//Lectura necesaría para que hasta que el server no le de vía libre para jugar, no juegue
 				//Si no hay dos jugadores no quitar primera lectura
@@ -192,6 +193,7 @@ public class ClientePrincipal extends Thread{
 					br.readLine();
 					int t1=Integer.parseInt(br.readLine());
 					r.setTiempoRestante(t1);
+					r.setTitle("Jugador 1");
 				}
 				r.setVisible(true);
 				bw.write(lista.get(i)+"\r\n");
