@@ -24,8 +24,11 @@ public class Preguntas_pista_musical {
 	public static Preguntas_pista_musical crear_preguntas_musicales_aleatorio(List<Pregunta_Pista_Musical> todas_preguntas) {
 		List<Pregunta_Pista_Musical> preguntas_musicales_final = new ArrayList<Pregunta_Pista_Musical>();
 		Random aleatorio = new Random();
-		for(int i = 0;i<4; i++) {
-			preguntas_musicales_final.add(todas_preguntas.get(aleatorio.nextInt(todas_preguntas.size())));
+		int numaleatorio = 0;
+		for(int i = 0;i<4; i++) {	
+			numaleatorio = aleatorio.nextInt(todas_preguntas.size());
+			preguntas_musicales_final.add(todas_preguntas.get(numaleatorio));
+			todas_preguntas.remove(numaleatorio);
 		}
 		//System.out.println(rosco_final);
 		return (new Preguntas_pista_musical(preguntas_musicales_final));

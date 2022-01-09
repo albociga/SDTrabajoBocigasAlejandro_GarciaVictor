@@ -32,7 +32,6 @@ public class Cliente_pista_musical_2_jugadores {
 
 			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
-				final CyclicBarrier barrera = new CyclicBarrier(2);
 				//CREO UN FICHERO AUXILIAR EN EL CLIENTE, QUE CUANDO EL JUEGO ACABE, SERÁ ELIMINADO
 				File f = new File("pista.snd");
 				if (!f.exists()) {
@@ -83,14 +82,15 @@ public class Cliente_pista_musical_2_jugadores {
 					System.out.println();
 					System.out.println();
 					System.out.println("REPRODUCIENDO SONIDO");	
-					SoundPlayer2 simpleSoundPlayer = new SoundPlayer2("pista.snd"); 
-					//SoundPlayer3_pruebas simpleSoundPlayer = new SoundPlayer3_pruebas("pista.snd",i); 
+					SoundPlayer_FINAL simpleSoundPlayer = new SoundPlayer_FINAL("pista.snd",i); 
 					try {
 						Thread.sleep(simpleSoundPlayer.getMiliSegundosAudio());
+						
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					simpleSoundPlayer.stop();
 					System.out.println();
 					System.out.println();
 					//System.out.println("SI ES SU TURNO PODRÁ ESCRIBIR");
