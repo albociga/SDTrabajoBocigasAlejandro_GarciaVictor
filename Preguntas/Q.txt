@@ -1,0 +1,8 @@
+Documento de pago para cobrar una cantidad determinada de los fondos que quien lo expide tiene en un banco:Cheque:Contiene
+Investigación o indagación que se hace de algo para averiguar la realidad de ello o sus circunstancias:Pesquia:Contiene
+Piedra tallada en forma de prisma rectangular que se emplea para pavimentar calles o carreteras:Adoquin:Contiene
+Parte del cuerpo de un santo:Reliquia:Contiene
+Acción de entrar en una plaza o lugar robando cuanto se halla:Saqueo:Contiene
+Órgano respiratorio de los peces formado por láminas o filamentos:Branquia:Contiene
+Triángulo que tiene todos sus lados iguales:Equilatero:Contiene
+Anilla que se abre y cierra mediante un muelle:Mosqueton:Contiene

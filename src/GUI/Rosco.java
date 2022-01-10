@@ -78,7 +78,6 @@ public class Rosco extends JFrame {
 	private int tiempoRestante;
 	private JButton btnJugar;
 	private Timer timer;
-	private TimerTask timerTask;
 	private JButton btnPasapalabra;
 	public Rosco(BufferedWriter bw,int tiempo) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -129,7 +128,13 @@ public class Rosco extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					pasapalabra=false;
-					buffer.write(txtRespuesta.getText()+"\r\n");
+					String conSigno="áàäéèëíìïóòöúùuÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ";
+					String sinSigno="aaaeeeiiiooouuuAAAEEEIIIOOOUUU";
+					String respuesta=txtRespuesta.getText();
+					for (int i = 0; i < conSigno.length(); i++) {
+						respuesta = respuesta.replace(conSigno.charAt(i), sinSigno.charAt(i));
+					}
+					buffer.write(respuesta+"\r\n");
 					buffer.flush();
 					txtRespuesta.setText("");
 				} catch (IOException e1) {
@@ -155,7 +160,7 @@ public class Rosco extends JFrame {
 				btnResponder.setVisible(true);
 				btnJugar.setVisible(false);
 				timer= new Timer();
-				timerTask=new TimerTask() {
+				timer.scheduleAtFixedRate(new TimerTask() {
 		            public void run() {
 		            	lblTiempoSeg.setText(String.valueOf(tiempoRestante));
 		                tiempoRestante--;
@@ -172,9 +177,7 @@ public class Rosco extends JFrame {
 								e.printStackTrace();
 							}
 		                }
-		            }
-		        };
-				timer.scheduleAtFixedRate(timerTask, 0, 1000);
+		            }}, 0, 1000);
 			}
 		});
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);

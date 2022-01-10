@@ -1,0 +1,8 @@
+Conjunto de reses que se llevan juntas a pastar:Ganado:Empieza
+Finca dedicada a la cría de animales:Granja:Empieza
+Macho de la gallina:Gallo:Empieza
+En el hinduismo, maestro espiritual o jefe religioso:Guru:Empieza
+Animal imaginario inventado para gastar bromas a los cazadores novatos:Gamusino:Empieza
+Queso blando y de sabor intenso, de origen italiano, elaborado con leche de vaca:Gorgonzola:Empieza
+Golosina blanca masticable, generalmente recubierta de azúcar:Gominola:Empieza
+Coloquialmente canto fúnebre con el que se acompañan los entierros:Gorigori:Empieza

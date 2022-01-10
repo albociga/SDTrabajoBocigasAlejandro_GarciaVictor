@@ -1,0 +1,8 @@
+Persona que manda un barco:Capitan:Empieza
+Jefe de la mafia, especialmente de narcotraficantes:Capo:Empieza
+Ropa deportiva que consta de un pantalón y una chaqueta o jersey amplios:Chandal:Empieza
+Ley fundamental de un Estado, que define el régimen de los derechos y libertades de los ciudadanos:Constitucion:Empieza
+Natural del estado de Estados Unidos cuya ciudad más poblada es Los Ángele:Californiano:Empieza
+Conjunto de profesores de un centro docente en ciertos grados de la enseñanza:Claustro:Empieza
+Hablar una o varias personas con otra u otras:Conversar:Empieza
+Producto que se utiliza para evitar la calvicie:Crecepelo:Empieza
