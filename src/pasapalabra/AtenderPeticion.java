@@ -108,9 +108,6 @@ public class AtenderPeticion implements Runnable {
 					dw2.writeBytes(preg_musicales.getPreguntas_musica().get(i).getPistas().get(j) + "\n");
 					dw2.flush();
 					
-					System.out.println("i = " + i);
-					System.out.println("i%2 = " + (i % 2));
-					
 					if (i % 2 == 0) {
 						
 						// MANDO UN START
@@ -187,7 +184,6 @@ public class AtenderPeticion implements Runnable {
 						
 						// ESPERO SU RESPUESTA
 						respuesta = br2.readLine();
-						System.out.println(respuesta);
 						
 						// COMPRUEBO SI LA RESPUESTA ES CORRECTA O NO
 						if (respuesta
@@ -242,7 +238,6 @@ public class AtenderPeticion implements Runnable {
 								dw.flush();
 								
 								j++;
-								System.out.println(j);
 							}
 
 						}
