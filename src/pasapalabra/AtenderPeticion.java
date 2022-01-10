@@ -49,6 +49,7 @@ public class AtenderPeticion implements Runnable {
 	}
 	public static int[] pruebaMusica(Socket s1, Socket s2,BufferedReader br,BufferedReader br2,DataOutputStream dw,DataOutputStream dw2) {
 		int [] resultados=new int[2];		
+		//Creación de las preguntas musicales aleatoriamente
 		Preguntas_pista_musical preg_musicales = Preguntas_pista_musical
 				.crear_preguntas_musicales_aleatorio(Pregunta_Pista_Musical.todas_pistas_musicales_existentes());
 		String respuesta = null;
@@ -59,12 +60,12 @@ public class AtenderPeticion implements Runnable {
 			// El numero total de Preguntas Musicales en la lista es 4 (Preguntas con
 			// diferentes canciones)
 			for (int i = 0; i < 4; i++) {
-				// Fichero de la canción
+				// Fichero de la canción, las canciones las contiene el servidor
 				File faux = new File(
 						preg_musicales.getPreguntas_musica().get(i).getPath_musica_pista_musical());
 				cancion = new FileInputStream(faux);
 
-				// Envio al cliente el tamaño del archivo de musica
+				// Envio a los clientes el tamaño del archivo de musica, para que sepa el tamaño del archivo que recibirá
 				long tam_archivo_musica = faux.length();
 				dw.writeLong(tam_archivo_musica);
 				dw.flush();
@@ -72,9 +73,8 @@ public class AtenderPeticion implements Runnable {
 				dw2.flush();
 
 				// Creo el Buffer de lectura
-				byte[] buff = new byte[1024 * 32];
-				// if(i % 2 == 0) { IMPLEMENTACIÓN POSTERIOR 2 JUGADORES
-				// Leo y envío el fichero al cliente
+				byte[] buff = new byte[1024 * 32];				
+				// Leo y envío el fichero a los clientes
 				int leidos = cancion.read(buff);
 				while (leidos != -1) {
 					dw.write(buff, 0, leidos);
@@ -85,58 +85,56 @@ public class AtenderPeticion implements Runnable {
 				}
 				cancion.close();
 				
-				for(Pregunta_Pista_Musical p : preg_musicales.getPreguntas_musica()) {
-					System.out.println(p.getSolucion());
-				}
-
 				int j = 0;
 				boolean respondida_correcta = false;
-				// Envío al cliente el numero de pistas totales para cada pregunta
-
+				
+				// Envío a los clientes el número de pistas totales para cada pregunta
 				dw.writeInt(preg_musicales.getPreguntas_musica().get(i).getPistas().size());
 				dw.flush();
 				dw2.writeInt(preg_musicales.getPreguntas_musica().get(i).getPistas().size());
 				dw2.flush();
 				
-				// HAGO UN BUCLE CON LIMITE EN EL NUMERO TOTAL DE PISTAS Y CON UN BOOLEANO QUE
-				// CAMBIA CUANDO LA RESPONDAN BIEN
+				// Bucle con el número de pistas de cada pregunta y un booleano por si uno de los dos clientes responde bien.
 				while (j < preg_musicales.getPreguntas_musica().get(i).getPistas().size() 
 						&& respondida_correcta == false) {
-					// ENVIO LA PISTA AL CLIENTE
+					// Envío de pistas a los clientes
 					dw.writeBytes(preg_musicales.getPreguntas_musica().get(i).getPistas().get(j) + "\n");
 					dw.flush();
 					dw2.writeBytes(preg_musicales.getPreguntas_musica().get(i).getPistas().get(j) + "\n");
 					dw2.flush();
 					
+					//Comienza jugando el Jugador 1
 					if (i % 2 == 0) {
 						
-						// MANDO UN START
+						// Le envío una señal de Start para que comience a jugar
 						dw.writeBytes("START\n");
 						dw.flush();
 						
-						// ESPERO SU RESPUESTA
+						// Servidor espera la respuesta del cliente
 						respuesta = br.readLine();
-						System.out.println(respuesta);
 						
-						// COMPRUEBO SI LA RESPUESTA ES CORRECTA O NO
+						// Comprobación respuesta es correcta
 						if (respuesta
 								.equalsIgnoreCase(preg_musicales.getPreguntas_musica().get(i).getSolucion())) {
 							
-							// SI ES CORRECTA, CAMBIA EL BOOLEANO PARA SALIR DEL BUCLE
+							// Si respuesta correcta booleano cambia a true
 							respondida_correcta = true;
 							
-							// ENVIO AL CLIENTE PARA QUE SEPA SI HA RESPONDIDO BIEN O NO
+							// Aviso al jugador que ha acertado y si ya no juega
 							dw.writeBytes("Correcto\n");
 							dw.flush();
 							
 							dw2.writeBytes("NO JUEGAS\n");
 							dw2.flush();
 							
+							//Envio un booleano que sacará del propio bucle al cliente
 							dw2.writeBoolean(true);
 							dw2.flush();
 							
+							//Le sumo los segundos que ha ganado
 							aciertos_numseg_jug_1 = aciertos_numseg_jug_1 + (5 - j);
 						} else {
+							//Como va por turnos, el primero habrá fallado, por tanto se lo indico al primero jugador
 							dw.writeBytes("Incorrecto\n");
 							dw.flush();
 							
@@ -171,12 +169,13 @@ public class AtenderPeticion implements Runnable {
 								dw2.flush();
 								
 								j++;
-								System.out.println(j);
+								//System.out.println(j);
 							}
 
 						}
 						
 					}
+					//Para aquellas preguntas impares, el jugador2 comienza a jugar
 					if (i % 2 == 1) {
 						// MANDO UN START
 						dw2.writeBytes("START\n");
@@ -351,7 +350,7 @@ public class AtenderPeticion implements Runnable {
 			while ((!rosco.todas_preguntas_respondidas() || !rosco2.todas_preguntas_respondidas()) && (!rosco.tiempoTerminado() || !rosco2.tiempoTerminado())) {
 				if(!rosco.todas_preguntas_respondidas() && jug1_true_jug2_false &&!rosco.tiempoTerminado()) {
 					//CONSOLA DEL SERVER, QUITAR PARA QUE NO APAREZCA(ES UN LOG DE JUGADAS)
-					System.out.println("El JUGADOR 1 esta jugando");
+					//System.out.println("El JUGADOR 1 esta jugando");
 					//Necesario para que los dos jugadores jueguen cada uno en su turno 
 					//(para que cliente1 o cliente2 se quede parado mientras el otro liente juega) 
 					
@@ -404,7 +403,7 @@ public class AtenderPeticion implements Runnable {
 					rosco.setTiempoRestante(Integer.parseInt(br.readLine()));
 				}else if (!rosco2.todas_preguntas_respondidas() && !jug1_true_jug2_false && !rosco2.tiempoTerminado()) {
 					//CONSOLA DEL SERVER, QUITAR PARA QUE NO APAREZCA(ES UN LOG DE JUGADAS)
-					System.out.println("El JUGADOR 2 esta jugando");
+					//System.out.println("El JUGADOR 2 esta jugando");
 					//Necesario para que los dos jugadores jueguen cada uno en su turno 
 					//(para que cliente1 o cliente2 se quede parado mientras el otro liente juega) 
 					bw2.write("Para la espera \r\n");
