@@ -5,7 +5,7 @@ public class Principal {
 		ClientePrincipal cp=new ClientePrincipal("localhost",8498);
 		cp.start();
 		try {
-			Thread.sleep(500); //Ponemos un sleep para asegurarnos que el primero que entra al servidor es el cliente principal
+			Thread.sleep(1000); //Ponemos un sleep para asegurarnos que el primero que entra al servidor es el cliente principal
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
