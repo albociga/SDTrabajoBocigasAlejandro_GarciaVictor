@@ -39,8 +39,6 @@ public class ClientePrincipal extends Thread{
 				DataInputStream di = new DataInputStream(s.getInputStream())){
 			inicio(br,bw);
 			if(multijugador) {//Si es multijufador crea un cliente y lo ejecuta
-				Cliente cli=new Cliente(host,puerto);
-				cli.start();
 				pruebaMusical(bw,s,di);
 			}
 			roscoFinal(br,bw);

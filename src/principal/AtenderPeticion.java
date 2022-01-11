@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
@@ -21,42 +22,56 @@ public class AtenderPeticion implements Runnable {
 	private Socket socket1;
 	private Socket socket2;
 	private boolean multijugador;
-	private BufferedReader br;
-	private BufferedWriter bw;
 	private int numeroDeJuegos;
-	public AtenderPeticion(Socket s1, BufferedReader r, BufferedWriter w) {
-		this.socket1=s1;
-		this.multijugador=false;
-		this.br=r;
-		this.bw=w;
-	}
-	public AtenderPeticion(Socket s1, Socket s2,BufferedReader r, BufferedWriter w,int numJuegos) {
+	public AtenderPeticion(Socket s1,Socket s2, int numJuegos) {
 		this.socket1=s1;
 		this.socket2=s2;
-		this.multijugador=true;
-		this.br=r;
-		this.bw=w;
+		this.multijugador=false;
 		this.numeroDeJuegos=numJuegos;
 	}
 	@Override
 	public void run() {
-		if(!this.multijugador) {//Si no es multijugador, solo se pasa el rosco individual, sino, el servidor pasa a ambos clientes tanto la prueba musical como el rosco multijugador
-			roscoIndividual();
-		}else {
-			try(BufferedReader br2 = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
-					BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(socket2.getOutputStream()));
-					DataOutputStream dw = new DataOutputStream(socket1.getOutputStream());
-					DataOutputStream dw2 = new DataOutputStream(socket2.getOutputStream());){
-				int[]seg=pruebaMusica(br2,dw,dw2);
-				roscoMultijugador(br2,bw2,seg[0],seg[1]);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(socket1.getInputStream()));
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket1.getOutputStream()));) {
+			inicio(br,bw);
+			if(!this.multijugador) {//Si no es multijugador, solo se pasa el rosco individual, sino, el servidor pasa a ambos clientes tanto la prueba musical como el rosco multijugador
+				roscoIndividual(br,bw);
+			}else {
+				try(BufferedReader br2 = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
+						BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(socket2.getOutputStream()));
+						DataOutputStream dw = new DataOutputStream(socket1.getOutputStream());
+						DataOutputStream dw2 = new DataOutputStream(socket2.getOutputStream());){
+					int[]seg=pruebaMusica(br,bw,br2,dw,dw2);
+					roscoMultijugador(br,bw,br2,bw2,seg[0],seg[1]);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
+	public void inicio(BufferedReader br, BufferedWriter bw) {
+		try {
+			int modo=Integer.parseInt(br.readLine());
+			if(modo==2) {
+				multijugador=true;
+			}
+			bw.write("MODDO recibido\r\n");
+			bw.flush();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	//esta funcion va a devolver las puntuaciones que se han conseguido en este prueba para añadirselos al rosco final
-	public int[] pruebaMusica(BufferedReader br2,DataOutputStream dw,DataOutputStream dw2) {
+	public int[] pruebaMusica(BufferedReader br, BufferedWriter bw,BufferedReader br2,DataOutputStream dw,DataOutputStream dw2) {
 		int [] resultados=new int[2];		
 		//Creación de las preguntas musicales aleatoriamente
 		Preguntas_pista_musical preg_musicales = Preguntas_pista_musical
@@ -295,7 +310,7 @@ public class AtenderPeticion implements Runnable {
 		resultados[1]=aciertos_numseg_jug_2;
 		return resultados;
 	}
-	public void roscoIndividual() {
+	public void roscoIndividual(BufferedReader br, BufferedWriter bw) {
 		Rosco_Final rosco = new Rosco_Final(
 				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20);
 		String linea = null;
@@ -349,7 +364,7 @@ public class AtenderPeticion implements Runnable {
 		}
 	}
 	
-	public void roscoMultijugador(BufferedReader br2, BufferedWriter bw2,int segExt1,int segExt2) {
+	public void roscoMultijugador(BufferedReader br, BufferedWriter bw,BufferedReader br2, BufferedWriter bw2,int segExt1,int segExt2) {
 		Rosco_Final rosco = new Rosco_Final(
 				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20+segExt1);
 		Rosco_Final rosco2 = new Rosco_Final(

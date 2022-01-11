@@ -1,10 +1,7 @@
 package principal;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -20,22 +17,8 @@ public class ServidorPrincipal {
 			while(true) {
 					Socket s1 = ss.accept();
 					numJuegos++;
-					BufferedReader br = new BufferedReader(new InputStreamReader(s1.getInputStream()));
-					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s1.getOutputStream()));
-					//System.out.println("Jugador 1 conectado");
-					String linea=br.readLine();
-					bw.write("Modo recibido\r\n");
-					bw.flush();
-					AtenderPeticion a;
-					if(linea.equals("1")) {
-						a=new AtenderPeticion(s1,br,bw);
-					}else {
-						//System.out.println("Esperado al segundo jugador (conecte otro clente si no lo has hecho)");
-						Socket s2 = ss.accept();
-						//System.out.println("Jugador 2 conectado");
-						a=new AtenderPeticion(s1,s2,br,bw,numJuegos);
-						
-					}
+					Socket s2 = ss.accept();
+					AtenderPeticion a=new AtenderPeticion(s1,s2,numJuegos);
 					pool.execute(a);
 			}
 		} catch (IOException e1) {
