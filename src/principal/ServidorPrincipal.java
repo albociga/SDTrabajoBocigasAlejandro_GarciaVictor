@@ -14,10 +14,12 @@ public class ServidorPrincipal {
 	public static void main(String[] args) {
 		//Se crea un pool de hilos para que se pueda acceder a la vez todas las veces que se desee
 		ExecutorService pool= Executors.newCachedThreadPool();
+		int numJuegos=0;
 		try (ServerSocket ss = new ServerSocket(8498))
 		{
 			while(true) {
 					Socket s1 = ss.accept();
+					numJuegos++;
 					BufferedReader br = new BufferedReader(new InputStreamReader(s1.getInputStream()));
 					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s1.getOutputStream()));
 					//System.out.println("Jugador 1 conectado");
@@ -31,7 +33,7 @@ public class ServidorPrincipal {
 						//System.out.println("Esperado al segundo jugador (conecte otro clente si no lo has hecho)");
 						Socket s2 = ss.accept();
 						//System.out.println("Jugador 2 conectado");
-						a=new AtenderPeticion(s1,s2,br,bw);
+						a=new AtenderPeticion(s1,s2,br,bw,numJuegos);
 						
 					}
 					pool.execute(a);

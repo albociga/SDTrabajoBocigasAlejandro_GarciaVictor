@@ -23,9 +23,7 @@ import pasapalabra.SoundPlayer_FINAL;
 public class Cliente extends Thread{
 	private String host;
 	private int puerto;
-	public static int contador=0;
 	public Cliente(String h, int prt) {
-		contador++;
 		this.host=h;
 		this.puerto=prt;
 	}
@@ -52,7 +50,8 @@ public class Cliente extends Thread{
 			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
 				//CREO UN FICHERO AUXILIAR EN EL CLIENTE, QUE CUANDO EL JUEGO ACABE, SERÁ ELIMINADO
-				File f = new File("pista"+contador+".snd");
+				int numFich=Integer.parseInt(di.readLine());
+				File f = new File("pista"+numFich+".snd");
 				if (!f.exists()) {
 					try {
 						f.createNewFile();

@@ -23,29 +23,32 @@ public class AtenderPeticion implements Runnable {
 	private boolean multijugador;
 	private BufferedReader br;
 	private BufferedWriter bw;
+	private int numeroDeJuegos;
 	public AtenderPeticion(Socket s1, BufferedReader r, BufferedWriter w) {
 		this.socket1=s1;
 		this.multijugador=false;
 		this.br=r;
 		this.bw=w;
 	}
-	public AtenderPeticion(Socket s1, Socket s2,BufferedReader r, BufferedWriter w) {
+	public AtenderPeticion(Socket s1, Socket s2,BufferedReader r, BufferedWriter w,int numJuegos) {
 		this.socket1=s1;
 		this.socket2=s2;
 		this.multijugador=true;
 		this.br=r;
 		this.bw=w;
+		this.numeroDeJuegos=numJuegos;
 	}
 	@Override
 	public void run() {
 		if(!this.multijugador) {//Si no es multijugador, solo se pasa el rosco individual, sino, el servidor pasa a ambos clientes tanto la prueba musical como el rosco multijugador
-			roscoIndividual(this.bw,this.br);
+			roscoIndividual();
 		}else {
 			try(BufferedReader br2 = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
+					BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(socket2.getOutputStream()));
 					DataOutputStream dw = new DataOutputStream(socket1.getOutputStream());
 					DataOutputStream dw2 = new DataOutputStream(socket2.getOutputStream());){
-				int[]seg=pruebaMusica(socket1,socket2,br,br2,dw,dw2);
-				roscoMultijugador(this.bw,this.br,br2,socket2,seg[0],seg[1]);
+				int[]seg=pruebaMusica(br2,dw,dw2);
+				roscoMultijugador(br2,bw2,seg[0],seg[1]);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -53,7 +56,7 @@ public class AtenderPeticion implements Runnable {
 		}
 	}
 	//esta funcion va a devolver las puntuaciones que se han conseguido en este prueba para añadirselos al rosco final
-	public static int[] pruebaMusica(Socket s1, Socket s2,BufferedReader br,BufferedReader br2,DataOutputStream dw,DataOutputStream dw2) {
+	public int[] pruebaMusica(BufferedReader br2,DataOutputStream dw,DataOutputStream dw2) {
 		int [] resultados=new int[2];		
 		//Creación de las preguntas musicales aleatoriamente
 		Preguntas_pista_musical preg_musicales = Preguntas_pista_musical
@@ -65,7 +68,13 @@ public class AtenderPeticion implements Runnable {
 			FileInputStream cancion = null;
 			// El numero total de Preguntas Musicales en la lista es 4 (Preguntas con
 			// diferentes canciones)
+			
 			for (int i = 0; i < 4; i++) {
+				//Envio del numero de juegos que se estan ejecutando simultaneamente
+				dw.writeBytes(numeroDeJuegos+"\r\n");
+				dw.flush();
+				dw2.writeBytes(numeroDeJuegos+"\r\n");
+				dw2.flush();
 				// Fichero de la canción, las canciones las contiene el servidor
 				File faux = new File(
 						preg_musicales.getPreguntas_musica().get(i).getPath_musica_pista_musical());
@@ -286,7 +295,7 @@ public class AtenderPeticion implements Runnable {
 		resultados[1]=aciertos_numseg_jug_2;
 		return resultados;
 	}
-	public static void roscoIndividual(BufferedWriter bw, BufferedReader br) {
+	public void roscoIndividual() {
 		Rosco_Final rosco = new Rosco_Final(
 				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20);
 		String linea = null;
@@ -340,7 +349,7 @@ public class AtenderPeticion implements Runnable {
 		}
 	}
 	
-	public static void roscoMultijugador(BufferedWriter bw, BufferedReader br,BufferedReader br2, Socket s,int segExt1,int segExt2) {
+	public void roscoMultijugador(BufferedReader br2, BufferedWriter bw2,int segExt1,int segExt2) {
 		Rosco_Final rosco = new Rosco_Final(
 				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20+segExt1);
 		Rosco_Final rosco2 = new Rosco_Final(
@@ -349,7 +358,7 @@ public class AtenderPeticion implements Runnable {
 		String linea = null;
 		String palabra_actual = null;
 		List<String> abecedario = Arrays.asList("A","B","C","D","E","F","G","H","I","J","L","M","N","Ñ","O","P","Q","R","S","T","U","V","X","Y","Z");
-		try(BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))){
+		try{
 			bw.write(rosco.getTiempoRestante()+"\r\n");
 			bw.flush();
 			bw2.write(rosco2.getTiempoRestante()+"\r\n");
