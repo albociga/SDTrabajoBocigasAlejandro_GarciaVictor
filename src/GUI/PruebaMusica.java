@@ -1,7 +1,5 @@
 package GUI;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
@@ -27,7 +25,6 @@ public class PruebaMusica extends JFrame {
 	private JTextField txtRespuesta;
 	private JButton btnResponder;
 	private JPanel panelRespuesta;
-	private JLabel lblReproduciendo;
 	private BufferedWriter buffer;
 	private JLabel lblPtsJug1;
 	private JLabel lblPtsJug2;
@@ -54,9 +51,6 @@ public class PruebaMusica extends JFrame {
 		panelRespuesta = new JPanel();
 		panelRespuesta.setVisible(false);
 		
-		lblReproduciendo = new JLabel("REPRODUCIENDO");
-		lblReproduciendo.setVisible(false);
-		
 		lblPtsJug1 = new JLabel("Jugador 1:");
 		
 		lblPtsJug2 = new JLabel("Jugador 2:");
@@ -78,9 +72,6 @@ public class PruebaMusica extends JFrame {
 							.addGap(34)
 							.addComponent(panelRespuesta, GroupLayout.PREFERRED_SIZE, 349, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(152)
-							.addComponent(lblReproduciendo))
-						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(308)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
@@ -93,16 +84,14 @@ public class PruebaMusica extends JFrame {
 									.addComponent(lblContJug1)))))
 					.addContainerGap(65, Short.MAX_VALUE))
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap(322, Short.MAX_VALUE)
+					.addContainerGap(315, Short.MAX_VALUE)
 					.addComponent(lblNewLabel)
 					.addGap(101))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(10)
-					.addComponent(lblReproduciendo)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(35)
 					.addComponent(txtPista, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(panelRespuesta, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -123,12 +112,20 @@ public class PruebaMusica extends JFrame {
 		txtRespuesta.setColumns(10);
 		
 		btnResponder = new JButton("Responder");
+		//Accion de responder, coge el contenido del cuadro de texto y cambia los caracteres de signo por sin signo
 		btnResponder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					buffer.write(txtRespuesta.getText()+"\r\n");
-					buffer.flush(); 
+					String conSigno="·‡‰ÈËÎÌÏÔÛÚˆ˙˘u¡¿ƒ…»ÀÕÃœ”“÷⁄Ÿ‹";
+					String sinSigno="aaaeeeiiiooouuuAAAEEEIIIOOOUUU";
+					String respuesta=txtRespuesta.getText();
+					for (int i = 0; i < conSigno.length(); i++) {
+						respuesta = respuesta.replace(conSigno.charAt(i), sinSigno.charAt(i));
+					}
+					buffer.write(respuesta+"\r\n");
+					buffer.flush();
 					txtRespuesta.setText("");
+					desactivarRespuesta();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -157,21 +154,18 @@ public class PruebaMusica extends JFrame {
 		panelRespuesta.setLayout(gl_panelRespuesta);
 		contentPane.setLayout(gl_contentPane);
 	}
+	//Sirve para escribir en el cuadro de la pista
 	public void setPista(String s) {
 		txtPista.setText(s);
 	}
-	public void ocultarReproduciendo() {
-		lblReproduciendo.setVisible(false);
-	}
-	public void mostrarReproduciendo() {
-		lblReproduciendo.setVisible(true);
-	}
+	//Hacen visibles o no el panel para responder
 	public void activarRespuesta() {
 		panelRespuesta.setVisible(true);
 	}
 	public void desactivarRespuesta() {
 		panelRespuesta.setVisible(false);
 	}
+	//Actualizan las puntuaciones de los jugadores
 	public void setPuntuacionJug1(String s) {
 		lblContJug1.setText(s);
 	}

@@ -92,7 +92,7 @@ public class Rosco extends JFrame {
 		txtRespuesta.setColumns(10);
 		
 		panelRosco = new JPanel();
-		panelRosco.setBounds(new Rectangle(0, 0, 360, 300));
+		panelRosco.setBounds(new Rectangle(0, 0, 360, 300));//He ido probando valores hasta que se ha colocado bien el rosco
 		panelRosco.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panelRosco.setLayout(null);
 		JPanel panelTiempo = new JPanel();
@@ -109,6 +109,7 @@ public class Rosco extends JFrame {
 		
 		btnPasapalabra = new JButton("Pasapalabra");
 		btnPasapalabra.setVisible(false);
+		//Acción al pulsar el boton pasapalabra, envia al servidor palabra clave para decir que pasa de turno
 		btnPasapalabra.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -124,6 +125,8 @@ public class Rosco extends JFrame {
 		
 		btnResponder = new JButton("Responder");
 		btnResponder.setVisible(false);
+		//Acción al pulsar el boton responder, coge lo que hay en el cuadro de respuesta, cambia los caracteres con signo por los de sin signo y lo envía al servidor. Las respuestas no llevan
+		// caracteres con signo salvo la ñ
 		btnResponder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -152,15 +155,14 @@ public class Rosco extends JFrame {
 		txtPregunta.setEnabled(false);
 		
 		btnJugar = new JButton("Jugar");
+		//Boton para empezar el juego o reanudar la partida
 		btnJugar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtPregunta.setVisible(true);
-				txtRespuesta.setVisible(true);
-				btnPasapalabra.setVisible(true);
-				btnResponder.setVisible(true);
+				mostrarPanelRespuesta();
 				btnJugar.setVisible(false);
 				timer= new Timer();
 				timer.scheduleAtFixedRate(new TimerTask() {
+					//Aqui inicializamos el contador con el valor del tiempoRestante, que es pasado por parametro y enviado por el servidor
 		            public void run() {
 		            	lblTiempoSeg.setText(String.valueOf(tiempoRestante));
 		                tiempoRestante--;
@@ -254,7 +256,7 @@ public class Rosco extends JFrame {
 		);
 		panelRosco.setLayout(gl_panelRosco);
 		contentPane.setLayout(gl_contentPane);
-		
+		//Creo tantos labels como letras
 		lRosco=new ArrayList<JLabel>();
 		lblA=new JLabel();
 		lblA.setText("A");
@@ -331,6 +333,7 @@ public class Rosco extends JFrame {
 		lblZ=new JLabel();
 		lblZ.setText("Z");
 		lRosco.add(lblZ);
+		//Sirve para asignar un icono correspondiente a cada letra y luego añadir el label al panel
 		for(int i=0;i<lRosco.size();i++) {
 			ImageIcon imagen = new ImageIcon(".\\LetrasPasapalabra\\Azul\\"+lRosco.get(i).getText()+".png");
 			Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(45,45, Image.SCALE_DEFAULT));
@@ -340,16 +343,19 @@ public class Rosco extends JFrame {
 		}
 		generarRosco();
 	}
+	//Esta función sirve para posicionar los iconos en forma circular
+	
 	public void generarRosco() {
+		//Creamos un centro del plano
 		double pMX = panelRosco.getSize().getWidth() / 2;
 		double pMY = panelRosco.getSize().getHeight() / 2;
-		double radio = 120 ;
+		double radio = 120 ;//Cogemos un radio
 		for (int i = 0; i < lRosco.size(); i++) {
-			double grados = (360 / 24.99) * i; 
-			double radianes = (grados * Math.PI) / 180;
-			double x = (pMX + radio * Math.sin(radianes));
+			double grados = (360 / 24.99) * i; //No dividimos entre 25 debido a que el icono de la letra z queda un poco mas abierto
+			double radianes = (grados * Math.PI) / 180;//Pasamos de grados a radianes
+			double x = (pMX + radio * Math.sin(radianes));//Damos valor a la x e y para mas tarde colocar el icono
 			double y = (pMY - radio * Math.cos(radianes));
-			lRosco.get(i).setBounds((int) (x - 45 / 2), (int) (y - 45 / 2), 45, 45);
+			lRosco.get(i).setBounds((int) (x - 45 / 2), (int) (y - 45 / 2), 45, 45); //Asignamos estos valores debido al tamaño que le hemos asignado al icono para que se posicione correctamente
 			lRosco.get(i).setVisible(true);
 		}
 	}
@@ -363,6 +369,7 @@ public class Rosco extends JFrame {
 		return this.pasapalabra;
 	}
 	public void actualizarRosco(String s,int i) {
+		//Actualiza el rosco cada vez que se responde. Si se ha acertado, cambia el icono azul por el verde, sino lo cambia por el rojo
 		if(s.equalsIgnoreCase("ACERTADA")) {
 			ImageIcon imagen = new ImageIcon(".\\LetrasPasapalabra\\Verde\\"+lRosco.get(i).getText()+".png");
 			Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(45,45, Image.SCALE_DEFAULT));
@@ -385,12 +392,23 @@ public class Rosco extends JFrame {
 	public void setTiempoRestante(int t) {
 		this.tiempoRestante=t;
 	}
-	public void pausarReloj() {
-		timer.cancel();
+	//He creado esta funcion para que una vez respondida no se acierte estando en modo multijugador, se oculte
+	public void ocultarPanelRespuesta() {
 		txtPregunta.setVisible(false);
 		txtRespuesta.setVisible(false);
 		btnPasapalabra.setVisible(false);
 		btnResponder.setVisible(false);
+	}
+	//En caso de que se haya acertado esta pregunta siempre mostrara el panel
+	public void mostrarPanelRespuesta(){
+		txtPregunta.setVisible(true);
+		txtRespuesta.setVisible(true);
+		btnPasapalabra.setVisible(true);
+		btnResponder.setVisible(true);
+	}
+	//Cada vez que se cambia de turno se para el timer
+	public void pausarReloj() {
+		timer.cancel();
 		btnJugar.setVisible(true);
 	}
 }

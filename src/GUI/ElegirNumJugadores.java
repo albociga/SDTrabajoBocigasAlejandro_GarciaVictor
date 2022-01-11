@@ -1,7 +1,5 @@
 package GUI;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -43,6 +41,7 @@ public class ElegirNumJugadores extends JFrame {
 		setContentPane(contentPane);
 		
 		JButton btnAceptar = new JButton("Aceptar");
+		//Cuando le da aceptar, dependiendo del item seleccionado, envia la opcion de jugar individual o multijugador
 		btnAceptar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -51,6 +50,9 @@ public class ElegirNumJugadores extends JFrame {
 					}
 					else buffer.write("2\r\n");
 					buffer.flush();
+					btnAceptar.setVisible(false);
+					rdbtnMultijugador.setVisible(false);
+					rdbtnIndividual.setVisible(false);
 				} catch (IOException e1) {
 						// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -60,6 +62,7 @@ public class ElegirNumJugadores extends JFrame {
 		});
 		
 		JLabel lblNewLabel = new JLabel("Elige un modo de juego");
+		//He creado y añadido los items a un ButtonGroup para que solo se puede seleccionar uno de ellos
 		ButtonGroup b=new ButtonGroup();
 		rdbtnMultijugador = new JRadioButton("Multijugador");
 		b.add(rdbtnMultijugador);
