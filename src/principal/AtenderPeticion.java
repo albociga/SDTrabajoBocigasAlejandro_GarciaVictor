@@ -55,8 +55,8 @@ public class AtenderPeticion implements Runnable {
 	}
 	public void inicio(BufferedReader br, BufferedWriter bw) {
 		try {
-			int modo=Integer.parseInt(br.readLine());
-			if(modo==2) {
+			String modo=br.readLine();
+			if(modo.equals("2")) {
 				multijugador=true;
 			}
 			bw.write("MODDO recibido\r\n");
@@ -312,7 +312,7 @@ public class AtenderPeticion implements Runnable {
 	}
 	public void roscoIndividual(BufferedReader br, BufferedWriter bw) {
 		Rosco_Final rosco = new Rosco_Final(
-				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20);
+				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),200);
 		String linea = null;
 		String palabra_actual = null;
 		List<String> abecedario = Arrays.asList("A","B","C","D","E","F","G","H","I","J","L","M","N","Ñ","O","P","Q","R","S","T","U","V","X","Y","Z");
@@ -366,9 +366,9 @@ public class AtenderPeticion implements Runnable {
 	
 	public void roscoMultijugador(BufferedReader br, BufferedWriter bw,BufferedReader br2, BufferedWriter bw2,int segExt1,int segExt2) {
 		Rosco_Final rosco = new Rosco_Final(
-				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20+segExt1);
+				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),200+segExt1);
 		Rosco_Final rosco2 = new Rosco_Final(
-				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),20+segExt2);
+				Rosco_Final.crear_rosco_aleatorio(Pregunta_Rosco.crea_hash_map_preguntas()),200+segExt2);
 		boolean jug1_true_jug2_false = true;
 		String linea = null;
 		String palabra_actual = null;
