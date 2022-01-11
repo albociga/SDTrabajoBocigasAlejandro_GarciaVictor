@@ -1,12 +1,12 @@
 # PASAPALABRA
 ## Sistemas Distribuidos Trabajo Alejandro Bocigas y Víctor García
 Juego de Pasapalabra en el que se ha implementado el "Juego de Pista Musical" y el "Rosco" característico de Pasapalabra. 
-###Pasos para la ejecución:
+### Pasos para la ejecución:
 - Iniciar clase "ServidorPrincipal.java"
 - Iniciar clase "Principal.java"
 - Seleccionar si se desea jugar Individualmente (Rosco) o Multijugador (Juego Pista Musical + Rosco)
 
-###Otras indicaciones:
+### Otras indicaciones:
 
 - El Juego Pista Musical consta de 4 canciones y 5 intentos en cada una. Si aciertas la canción el primer intento obtendrás 5 segundos más en el rosco, en el segundo intento 4, en el tercero 3, en el cuarto 2 y en el quinto 1.
 - En el Rosco pulse Pasapalabra para pasar de turno y Responder para responder (no hemos implementado el pulsar intro para responder ya que pdría dar fallos). No es necesario poner tildes, ni mayúsculas en las respuestas.
