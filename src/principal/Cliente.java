@@ -21,9 +21,11 @@ import GUI.Rosco;
 import pasapalabra.SoundPlayer_FINAL;
 //Clase igual a clientePrincipal solo que no aparece el panel de inicio y el booleano multijugador seria siempre true
 public class Cliente extends Thread{
-	String host;
-	int puerto;
+	private String host;
+	private int puerto;
+	public static int contador=0;
 	public Cliente(String h, int prt) {
+		contador++;
 		this.host=h;
 		this.puerto=prt;
 	}
@@ -42,7 +44,7 @@ public class Cliente extends Thread{
 			e1.printStackTrace();
 		}
 	}
-	public static void pruebaMusical(BufferedWriter bw, Socket s,DataInputStream di) {
+	public void pruebaMusical(BufferedWriter bw, Socket s,DataInputStream di) {
 		String mandado_server = null;
 		try{
 			PruebaMusica pm=new PruebaMusica(bw);
@@ -50,7 +52,7 @@ public class Cliente extends Thread{
 			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
 				//CREO UN FICHERO AUXILIAR EN EL CLIENTE, QUE CUANDO EL JUEGO ACABE, SERÁ ELIMINADO
-				File f = new File("pista.snd");
+				File f = new File("pista"+contador+".snd");
 				if (!f.exists()) {
 					try {
 						f.createNewFile();
@@ -93,7 +95,7 @@ public class Cliente extends Thread{
 				int tam_pistas = di.readInt();
 				while (i < tam_pistas && aux == false && respuesta_correcta_segundo_cliente == false) {
 					mandado_server = di.readLine();
-					SoundPlayer_FINAL simpleSoundPlayer = new SoundPlayer_FINAL("pista.snd",i); 
+					SoundPlayer_FINAL simpleSoundPlayer = new SoundPlayer_FINAL(f.getName(),i); 
 					pm.setPista(mandado_server);
 					//SoundPlayer3_pruebas simpleSoundPlayer = new SoundPlayer3_pruebas("pista.snd",i); 
 
@@ -150,7 +152,7 @@ public class Cliente extends Thread{
 			e1.printStackTrace();
 		}
 	}
-	public static void roscoFinal(BufferedReader br,BufferedWriter bw) {
+	public void roscoFinal(BufferedReader br,BufferedWriter bw) {
 		List<Integer> lista=new ArrayList<Integer>();
 		for(int i=0;i<25;i++) {
 			lista.add(i);

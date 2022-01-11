@@ -25,10 +25,12 @@ import GUI.Rosco;
 import pasapalabra.SoundPlayer_FINAL;
 
 public class ClientePrincipal extends Thread{
-	public static boolean multijugador;
+	private  boolean multijugador;
 	private String host;
 	private int puerto;
+	public static int contador=0;
 	public ClientePrincipal(String h,int port) {
+		contador++;
 		this.host=h;
 		this.puerto=port;
 	}
@@ -53,7 +55,7 @@ public class ClientePrincipal extends Thread{
 		}
 	}
 	
-	public static void inicio(BufferedReader br, BufferedWriter bw) {
+	public void inicio(BufferedReader br, BufferedWriter bw) {
 		//Se crea y muestra el panel para elegir el modo de juego
 		ElegirNumJugadores enj=new ElegirNumJugadores(bw);
 		enj.setVisible(true);
@@ -69,7 +71,7 @@ public class ClientePrincipal extends Thread{
 		enj.dispose();
 	}
 	
-	public static void pruebaMusical(BufferedWriter bw, Socket s,DataInputStream di) {
+	public void pruebaMusical(BufferedWriter bw, Socket s,DataInputStream di) {
 		String mandado_server = null;
 		try{
 			PruebaMusica pm=new PruebaMusica(bw);
@@ -78,7 +80,7 @@ public class ClientePrincipal extends Thread{
 			//EL NUMERO DE PREGUNTAS QUE HAY EN LA LISTA SON 4
 			for (int k = 0; k < 4; k++) {
 				//CREO UN FICHERO AUXILIAR EN EL CLIENTE, QUE CUANDO EL JUEGO ACABE, SERÁ ELIMINADO
-				File f = new File("pista.snd");
+				File f = new File("pista"+contador+".snd");
 				if (!f.exists()) {
 					try {
 						f.createNewFile();
@@ -122,7 +124,7 @@ public class ClientePrincipal extends Thread{
 				while (i < tam_pistas && aux == false && respuesta_correcta_segundo_cliente == false) {
 					//Envia el servidor un fragmento de la pista musical
 					mandado_server = di.readLine();
-					SoundPlayer_FINAL simpleSoundPlayer = new SoundPlayer_FINAL("pista.snd",i); 
+					SoundPlayer_FINAL simpleSoundPlayer = new SoundPlayer_FINAL(f.getName(),i); 
 					pm.setPista(mandado_server);
 					rep.setVisible(true);//Muestra el mensaje de reproduciendo
 					try {//Espera a que suene toda la pista musical
@@ -183,7 +185,7 @@ public class ClientePrincipal extends Thread{
 	}
 	
 	
-	public static void roscoFinal(BufferedReader br, BufferedWriter bw) {
+	public void roscoFinal(BufferedReader br, BufferedWriter bw) {
 		//Se crea una lista de enteros, que harán referencia a la posicion del rosco en el que están
 		List<Integer> lista=new ArrayList<Integer>();
 		for(int i=0;i<25;i++) {
